@@ -1,0 +1,3 @@
+bool validarLogin() {
+  return true;
+}
