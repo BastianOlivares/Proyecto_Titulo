@@ -30,7 +30,7 @@ class _menuState extends State<menu> {
       /////////////////////////////////////////////// INTENTAR MODULAR EN appBar
         backgroundColor: Colors.redAccent,
         //automaticallyImplyLeading: false,
-        title: Text("Menu"),
+        title: Text("EXFood"),
         actions: <Widget> [
           IconButton(
             icon: const Icon(Icons.account_circle),
@@ -60,7 +60,7 @@ class _menuState extends State<menu> {
           print(_paginaActual);
         },
         //pasar por parametro al modular  
-        currentIndex: _paginaActual, //Es el donde comienza seleccionado el botton del navigationbar
+        currentIndex: _paginaActual, //Es  donde comienza seleccionado el botton del navigationbar
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.sell),

@@ -10,6 +10,7 @@ class FirestoreHelper {
     return coleccionPublicaciones.snapshots().map((snapshot) => snapshot.docs.map((doc) => PublicacionModel.fromSnapShot(doc)).toList());
   }
 
+
   static Future crearPublicacion(PublicacionModel publicacion) async{
     final coleccionPublicaciones = FirebaseFirestore.instance.collection('publicaciones'); //nombre de la coleccion de la BD
     

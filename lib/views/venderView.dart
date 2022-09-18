@@ -28,6 +28,7 @@ class _venderViewState extends State<venderView> {
   final TextInputType _textoType =TextInputType.text;
   final TextInputType _numeroType = TextInputType.number;
   
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,71 +89,6 @@ class _venderViewState extends State<venderView> {
               ), 
             ),
           ),
-
-
-          ////LUGAR DE PRUEBA DE LEER LA BD
-          
-          StreamBuilder(
-            stream: Firestore.instance.collection("publicaciones").snapshots(),
-            builder: (context,snapshot) {
-              if(snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: (snapshot.data! as QuerySnapshot).docs.length,
-                  itemBuilder: (context, index) {
-                    final documentSnapshot = (snapshot.data! as QuerySnapshot).docs[index];
-                    return Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text("${documentSnapshot["categoria"]}"),
-                        )
-                      ],
-                    );
-                  },
-                );
-              }
-              else {
-                return Center(child: Text("OH OH "),);
-              }
-            },
-          )
-
-
-          // StreamBuilder<List<PublicacionModel>>(
-          //   stream: FirestoreHelper.read(),
-          //   builder: (context, snapshot) {
-          //     if(snapshot.connectionState == ConnectionState.waiting){
-          //       return Center(child: CircularProgressIndicator());
-          //     }
-          //     if(snapshot.hasError) {
-          //       return  Center(child: Text("ocurrio un error"),);
-          //     }
-          //     if(snapshot.hasData) {
-          //       final  publicacionesData = snapshot.data;
-          //       return Expanded(
-          //         child: ListView.builder(itemCount: publicacionesData!.length ,itemBuilder:(context, index) {
-          //           final siglespublicacion = publicacionesData[index];
-          //           return Container(
-          //             margin: const EdgeInsets.symmetric(vertical: 5),
-          //             child: ListTile(
-          //               leading: Container(
-          //                 width: 40.0,
-          //                 height: 40.0,
-          //                 decoration: const BoxDecoration(
-          //                   color: Colors.deepPurple,
-          //                   shape: BoxShape.circle,
-          //                 ),
-          //               ),
-          //               title: Text("CATEGORIA:${siglespublicacion.categoria} NOMBRE: ${siglespublicacion.nombre}"),
-          //               subtitle:  Text("descripcion:${siglespublicacion.descripcion}   precio:${siglespublicacion.precio}"),
-          //             ),
-          //           );
-          //         })
-          //       );
-          //     } 
-          //     return Center(child: CircularProgressIndicator(),);
-          //   }
-          // )
-
           
           ],
       ),

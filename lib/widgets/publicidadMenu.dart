@@ -1,44 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
-//aqui va la lista con la estructura
-List<Widget> publicaciones = [
-    Container(
-      height: double.infinity,
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const <Widget>[
-
-          Card(
-            child: SizedBox(
-              height: 250.0,
-              width: 100.0,
-              child: Expanded(
-                child: Text("asasdasasdasda"),
-              ),
-            ),
-          ),
-
-          Card(
-            child: SizedBox(
-              height: 250.0,
-              width: 100.0,
-              child: Expanded(
-                child: Text("12311231231232 "),
-              ),
-            ),
-          )
-          
-
-        
-        ],
-      ),
-    ),
-    Text("1"),
-    Text("2"),
-
-];
 
 //widget
 class publicidadMenu extends StatefulWidget {
@@ -49,23 +12,62 @@ class publicidadMenu extends StatefulWidget {
 }
 
 class _publicidadMenuState extends State<publicidadMenu> {
+  
+  ///Extrae todos los datos dela BD sin ninguna query
+  Future getData() async {
+    await Future.delayed(Duration(seconds: 4));
+    var firestore = FirebaseFirestore.instance;
+    QuerySnapshot qn = await firestore.collection("publicaciones").get();
+    return qn;
+  }  
+  
   @override
   Widget build(BuildContext context) {
-    return Swiper(
-      viewportFraction: 0.8,
-      scale: 0.9,
-        itemBuilder: (BuildContext context,int index){
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: publicaciones[index],
+    return FutureBuilder(
+      future: getData(),
+      builder: (context, snapshot) {
+        if(snapshot.hasData) {
+          return Swiper(
+            viewportFraction: 0.8,
+            scale: 0.9,
+            itemCount: 3, ///EL SWIPER SE ENCARGA DE  SOLO MOSTRAR LOS PRIMEROS 3 ELEMNTOS DE TODAS LAS PUBLICAIONES
+            pagination: const SwiperPagination(),
+            control: const SwiperControl(),
+            itemBuilder: (BuildContext context,int index){
+              final documentSnapshot = (snapshot.data! as QuerySnapshot).docs[index];
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Text("CATEGORIA: ${documentSnapshot['categoria']}"),
+                    Text("NOMBRE: ${documentSnapshot['nombre']}"),
+                    Text("DESCRIPCION: ${documentSnapshot['descripcion']}"),
+                    Text("PRECIO: \$${documentSnapshot['precio']}"),
+                  ],
+                )
+              );
+            },
           );
-        },
-        itemCount: 3,
-        pagination: const SwiperPagination(),
-        control: const SwiperControl(),
-      );
+        }else {
+          return Center(
+            child: Container(
+              width: 40.0,
+              height: 40.0,
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+
+        
+      }
+    );
+    
+    
+    
+    
   }
 }
