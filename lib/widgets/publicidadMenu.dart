@@ -36,16 +36,89 @@ class _publicidadMenuState extends State<publicidadMenu> {
               final documentSnapshot = (snapshot.data! as QuerySnapshot).docs[index];
               return Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Column(
-                  children: [
-                    Text("CATEGORIA: ${documentSnapshot['categoria']}"),
-                    Text("NOMBRE: ${documentSnapshot['nombre']}"),
-                    Text("DESCRIPCION: ${documentSnapshot['descripcion']}"),
-                    Text("PRECIO: \$${documentSnapshot['precio']}"),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            width: double.infinity,
+                            color: Theme.of(context).primaryColor,
+                            child: Image.network(
+                              documentSnapshot['idImagen'],
+                              height: double.infinity,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          
+                        ),
+
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            width: double.infinity,
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      documentSnapshot['nombre'],
+                                      style: const TextStyle(fontSize: 35.0, fontWeight: FontWeight.bold),
+                                    )
+                                  ),
+                                ),
+
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "\$${documentSnapshot['precio']}",
+                                          style: const TextStyle(color: Colors.black, fontSize: 25.0, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ElevatedButton(
+                                          onPressed: (){}, 
+                                          child: const Text("Ver"),
+                                          style: ButtonStyle(
+                                          shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(70.0),
+                                            ),
+                                          ),
+                                          backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
+                                        ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                        // Text("CATEGORIA: ${documentSnapshot['categoria']}"),
+                        // Text("NOMBRE: ${documentSnapshot['nombre']}"),
+                        // Text("DESCRIPCION: ${documentSnapshot['descripcion']}"),
+                        // Text("PRECIO: \$${documentSnapshot['precio']}"),
+                      ],
+                    ),
+                  ),
                 )
               );
             },

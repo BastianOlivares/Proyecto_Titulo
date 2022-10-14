@@ -94,21 +94,49 @@ class _venderViewState extends State<venderView> {
               ),
             ),
 
-          CircleAvatar(
-            radius: 30.0,
-            backgroundColor: Theme.of(context).primaryColor,
-            child: IconButton(
-              onPressed: ()async{
-                var camara = await ImagePicker.pickImage(source: ImageSource.camera);
-                //final XFile? galeria = await _picker.pickImage(source: ImageSource.gallery);         AQUI EL DE LA GALERIA HACER UN FI
-                setState(() {
-                  _imagenSeleccionada = camara as File ;
-                });
-              },
-              icon: const Icon(Icons.camera_alt_rounded),
-              color: Colors.white,
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                CircleAvatar(
+                  radius: 30.0,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: IconButton(
+                    onPressed: ()async{
+                      var camara = await ImagePicker.pickImage(source: ImageSource.camera);
+                      //final XFile? galeria = await _picker.pickImage(source: ImageSource.gallery);         AQUI EL DE LA GALERIA HACER UN FI
+                      setState(() {
+                        _imagenSeleccionada = camara as File ;
+                      });
+                    },
+                    icon: const Icon(Icons.camera_alt_rounded),
+                    color: Colors.white,
+                  ),
+                ),
+
+
+                CircleAvatar(
+                  radius: 30.0,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: IconButton(
+                    onPressed: ()async{
+                      //var camara = await ImagePicker.pickImage(source: ImageSource.camera);
+                      var galeria = await ImagePicker.pickImage(source: ImageSource.gallery);         
+                      setState(() {
+                        _imagenSeleccionada = galeria as File ;
+                      });
+                    },
+                    icon: const Icon(Icons.add_photo_alternate_rounded),
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
+
+          
+
 
 
           //BOTON PARA AGREGAR A LA BD

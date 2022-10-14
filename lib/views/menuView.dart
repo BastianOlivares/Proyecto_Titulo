@@ -50,7 +50,10 @@ class _menuViewState extends State<menuView> {
   Widget _labelCategoria(String categoria){
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child:  Text("CATEGORIA ${categoria.toUpperCase()}")
+      child:  Text(
+        "CATEGORIA ${categoria.toUpperCase()}",
+        style: const TextStyle(color: Color.fromRGBO(255, 93, 162, 1),fontSize: 40.0, fontWeight: FontWeight.bold),
+      )
     );
   }
 
@@ -66,8 +69,8 @@ class _menuViewState extends State<menuView> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: SizedBox(
-              height: 200.0,
-              width: 500.0,
+              height: 300.0,
+              //width: 600.0,
               child: ListView.builder( 
                 itemCount: 3,
                 scrollDirection:  Axis.horizontal,
@@ -75,18 +78,84 @@ class _menuViewState extends State<menuView> {
                   final documentSnapshot = (snapshot.data! as QuerySnapshot).docs[index];
                   return Container(
                     width: 250.0,
-                    margin: EdgeInsets.all(10.0),
-                    padding: EdgeInsets.all(10.0),
+                    margin:const  EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
                       children: [
-                        Text("CATEGORIA: ${documentSnapshot['categoria']}"),
-                        Text("NOMBRE: ${documentSnapshot['nombre']}"),
-                        Text("DESCRIPCION: ${documentSnapshot['descripcion']}"),
-                        Text("PRECIO: \$${documentSnapshot['precio']}"),
+
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            width: double.infinity,
+                            color: Theme.of(context).primaryColor,
+                            child: Image.network(
+                              documentSnapshot['idImagen'],
+                              height: double.infinity,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          
+                        ),
+
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            width: double.infinity,
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      documentSnapshot['nombre'],
+                                      style: const TextStyle(fontSize: 35.0, fontWeight: FontWeight.bold),
+                                    )
+                                  ),
+                                ),
+
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "\$${documentSnapshot['precio']}",
+                                          style: const TextStyle(color: Colors.black, fontSize: 25.0, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ElevatedButton(
+                                          onPressed: (){}, 
+                                          child: const Text("Ver"),
+                                          style: ButtonStyle(
+                                          shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(70.0),
+                                            ),
+                                          ),
+                                          backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
+                                        ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                        // Text("CATEGORIA: ${documentSnapshot['categoria']}"),
+                        // Text("NOMBRE: ${documentSnapshot['nombre']}"),
+                        // Text("DESCRIPCION: ${documentSnapshot['descripcion']}"),
+                        // Text("PRECIO: \$${documentSnapshot['precio']}"),
                       ],
                     )
                   );

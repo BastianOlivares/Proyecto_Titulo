@@ -35,10 +35,8 @@ class FirestoreHelper {
                           .putFile(imagenSeleccionada);
 
         //AQUI FALTA OBTENER AL URL YA Q NO ME LA ACEPTA :c
-        // uploadTask.whenComplete(() async{
-        //   urlImage = await storegeRef.getDownloadURL();
-        //   print(urlImage);
-        // });
+        var downUrl = await (await uploadTask).ref.getDownloadURL();
+        urlImage = downUrl.toString();
         
         
       }
@@ -59,7 +57,7 @@ class FirestoreHelper {
       id_user : publicacion.id_user,
       nombre : publicacion.nombre,
       precio : publicacion.precio,
-      idImagen : publicacion.idImagen,
+      idImagen : urlImage,
     ).toJson();
 
     try{

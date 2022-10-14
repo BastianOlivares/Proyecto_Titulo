@@ -173,6 +173,7 @@ class _buscarViewState extends State<buscarView> {
                           Text(documentSnapshot['categoria']),
                           Text(documentSnapshot['descripcion']),
                           Text(documentSnapshot['precio'].toString()),
+                          if(!documentSnapshot['idImagen'].isEmpty) Expanded(child: Image.network(documentSnapshot['idImagen'])),
                           
                           ElevatedButton(
                             onPressed: (){}, 
