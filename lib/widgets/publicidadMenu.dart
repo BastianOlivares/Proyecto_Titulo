@@ -15,7 +15,6 @@ class _publicidadMenuState extends State<publicidadMenu> {
   
   ///Extrae todos los datos dela BD sin ninguna query
   Future getData() async {
-    await Future.delayed(Duration(seconds: 4));
     var firestore = FirebaseFirestore.instance;
     QuerySnapshot qn = await firestore.collection("publicaciones").get();
     return qn;

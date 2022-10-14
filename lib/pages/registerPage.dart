@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:market_place/widgets/loginBody.dart';
-import 'package:market_place/widgets/registerBody.dart';
 import 'package:market_place/pages/loginPage.dart';
 import 'package:market_place/ruter.dart';
 
@@ -9,9 +7,6 @@ Widget registerPage() {
   return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
-      routes: <String, WidgetBuilder>{
-        '/loginPage': (BuildContext context) => loginBody(),
-      },
       home: Scaffold(
         appBar: AppBar(
           title: Text("registro"),
@@ -23,15 +18,15 @@ Widget registerPage() {
           child: ListView(
             children: [
               TextFormField(
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  border:  OutlineInputBorder(),
                   hintText: "asdasdasdas",
                 ),
               ),
 
               TextFormField(
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  border:  OutlineInputBorder(),
                   hintText: "asdasdasdas",
                 ),
               )

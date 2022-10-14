@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
 class buscarView extends StatefulWidget {
   const buscarView({super.key});
 
@@ -10,120 +11,201 @@ class buscarView extends StatefulWidget {
 }
 
 class _buscarViewState extends State<buscarView> {
+  double rating = 10;
+  List<String> listaFiltros = [];
 
-  final ScrollController _scrollController = ScrollController();
-  List<String> items = [];
-  bool loading = false, allLoaded = false;
+  static Future<QuerySnapshot> getPublicaiones(List<String> lista) async {
+    final refPublicicacion  = FirebaseFirestore.instance.collection("publicaciones");
 
-  Future getData() async {
-    await Future.delayed(Duration(seconds: 4));
-    var firestore = FirebaseFirestore.instance;
-    QuerySnapshot qn = await firestore.collection("publicaciones").get();
-    return qn;
-  }  
-
-
-  //ENCARGADO DE TRAER LOS DATOS CAUNDO CORRESPONDA
-  mockFetch () async {
-    if(allLoaded) {
-      return;
-    }
-
-    setState(() {
-      loading = true;
-    });
-    await Future.delayed(Duration(milliseconds: 500));
-    List<String> newData = items.length >=30 ? [] : List.generate(5, (index) => "List ${index + items.length}");
-    if(newData.isNotEmpty) {
-      items.addAll(newData);
-    }
-
-    setState(() {
-      loading = false;
-      allLoaded = newData.isEmpty;
-    });
+    if(lista.isEmpty){
+      print("arreglo vacio");
+      return refPublicicacion.get();
+    }   
+    else {
+      print("arreglo no vacio");
+      return refPublicicacion.where("categoria", whereIn: lista).get();
+    }            
   }
 
-  @override
-  void initState() {
-    super.initState();
-    mockFetch();
-    _scrollController.addListener(() {
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent && !loading) {
-        print("NUEVAS LLAMADAS"); //SE PUEDE BORRAR ES SOLO UN AVISA QUE FUNCIONA
-        mockFetch();
-      }
-    });
+  static Future<QuerySnapshot> getCategorias() async {
+    final refCategorias = FirebaseFirestore.instance.collection("categorias");
+    
+    return refCategorias.get();
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _scrollController.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
-    if(items.isNotEmpty){
-      return Stack(
-        children: [
-          ListView.builder(
-            controller: _scrollController,
-            itemBuilder: (context, index) {
-              if(index < items.length) {
-                return Container(
-                  margin: EdgeInsets.all(20.0),
-                  height: 400.0,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey, //PROBAR CON WHITE54 PERO CON UN BACKGROUND DE FONDO
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(items[index], style: TextStyle(fontSize: 30.0),),
-                );
-              }
-              else {
-                return Container(
-                  width: double.infinity,
-                  height: 50.0,
-                  child: const Center(
-                    child:  Text("HASTA AQUI LLEGAN LAS PUBLICACIONES"),
-                  ),
+    return Column(
+      children: [
+        filtros(),
+        publicaiones(),
+      ],
+    );
+  }
 
-                );
-              }
-            }, 
-            itemCount: items.length + (allLoaded?1:0),
+
+  Widget filtros() {
+    return Container(
+      height: 200.0,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color.fromRGBO(71, 208, 189, 1),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(50.0),
+          bottomRight: Radius.circular(50.0),
+        ),
+      ),
+      child: Column(
+        children: [
+
+          const Padding(
+            padding:  EdgeInsets.all(8.0),
+            child: Text("CATEGORIA"),
           ),
 
-          if(loading)...{
-            Positioned(
-              left: 10.0,
-              bottom: 0.0,
-              child:  Container(
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                height: 80.0,
-                width: 80.0,
-                child: const Center(child: CircularProgressIndicator()),
-              )
-            )
-          } 
+          Expanded(
+            child: FutureBuilder(
+              future: getCategorias(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if(snapshot.hasData) {
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data.size,
+                    itemBuilder: (context, index) {
+                      bool presionado = false;
+                      final documentSnapshot = (snapshot.data as QuerySnapshot).docs[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: 100.0,
+                          child: ElevatedButton(
+                            onPressed: (){
+                              if(!include(listaFiltros, documentSnapshot['nombre'])) {
+                                listaFiltros.add(documentSnapshot['nombre'].toString());
+                                listaFiltros.forEach((element) => print(element));
+                                setState(() {
+                                  getPublicaiones(listaFiltros);
+                                  }
+                                );
+                              }
+                              else {
+                                listaFiltros.remove(documentSnapshot['nombre'].toString());
+                                listaFiltros.forEach((element) => print(element));
+                                setState(() {
+                                  getPublicaiones(listaFiltros);
+                                  }
+                                );
+                              }
+                              
+                            }, 
+                            child: Text(documentSnapshot['nombre'].toUpperCase()),
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70.0),
+                                ),
+                              ),
+                              backgroundColor: (include(listaFiltros, documentSnapshot['nombre'])) ? MaterialStatePropertyAll<Color>(Theme.of(context).canvasColor) : MaterialStatePropertyAll<Color>(Theme.of(context).primaryColor),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                else{
+                  return Center(
+                    child: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+
+          const Padding(
+            padding:  EdgeInsets.all(8.0),
+            child: Text("RANGO DE PRECIO"),
+          ),
+
+          Slider(
+            value: rating,
+            onChanged: (newRating) {
+              setState(() => rating = newRating);
+            },
+            min: 0,
+            max: 50000 ,
+            divisions: 20,
+            label: "\$${rating.toInt()}",
+            activeColor: Theme.of(context).primaryColor,
+            inactiveColor: Theme.of(context).cardColor,
+          ),
         ],
-      );
-      
-      
-      
+      ),
+    );
+  }
+
+  Widget publicaiones() {
+    return Expanded(
+      child: FutureBuilder(
+        future: getPublicaiones(listaFiltros),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if(snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.size,
+              itemBuilder: (context, index) {
+                final documentSnapshot = (snapshot.data as QuerySnapshot).docs[index];
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 10.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 500.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor
+                      ),
+                      child: Column(
+                        children: [
+                          Text(documentSnapshot['nombre']),
+                          Text(documentSnapshot['categoria']),
+                          Text(documentSnapshot['descripcion']),
+                          Text(documentSnapshot['precio'].toString()),
+                          
+                          ElevatedButton(
+                            onPressed: (){}, 
+                            child: const Text("VER"),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+          else{
+            return Center(
+              child: Container(
+                width: 40.0,
+                height: 40.0,
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  bool include(List<String> array, String elementoBuscado) {
+    for (var objeto in array) {
+      if(objeto == elementoBuscado) {
+        return true;
+      }
     }
-    else {
-      return Container (
-        child: const Center (
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+    return false;
   }
 }

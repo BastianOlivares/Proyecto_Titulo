@@ -1,9 +1,15 @@
+
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../model/publicacionesModel.dart';
+import 'package:uuid/uuid.dart';
 
 class venderView extends StatefulWidget {
   const venderView({super.key});
@@ -17,16 +23,22 @@ class _venderViewState extends State<venderView> {
   //VARIABLES PARA LOS DATOS DEL USUARIO
   String idUsuario = 'Q1mREi1iIhiW9b9vC3nM';
   String nombreUsuario = 'Bastian Olivares';
-  
 
   //VARIABLES LOCALES PARA LOS CONTROLERS
   final TextEditingController _categoriaController = TextEditingController();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
+  final TextEditingController _fechaCaducidadController = TextEditingController();
 
   final TextInputType _textoType =TextInputType.text;
   final TextInputType _numeroType = TextInputType.number;
+  final TextInputType _multiLineType = TextInputType.multiline;
+  final TextInputType _dataType = TextInputType.datetime;
+
+  //VARIABLES DE IMAGENES
+  var _imagenSeleccionada = null;
+
   
 
   @override
@@ -34,19 +46,18 @@ class _venderViewState extends State<venderView> {
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Colors.amber,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: double.infinity,
-      height: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+
+      margin: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ListView(
-        children:  [
+        children: <Widget> [
 
           //---ENCABEZADO---///
           //TITULO DE LA VISTA VENDER
           const Center(
-            child: Text("Publicaiones", style: TextStyle(fontSize: 50.0),),
+            child: Text("PUBLICAR", style: TextStyle(fontSize: 50.0),),
           ),
 
           //DESCRIPCION DE LA VIEW VENDER
@@ -61,29 +72,63 @@ class _venderViewState extends State<venderView> {
           //CATEGORIA
           _inputPublicacion("CATEGORIA", _categoriaController, 1, _textoType),
 
+          //PRECIO   ---AQUI VALIDAR Q SEA SOLONUMERO
+          _inputPublicacion("PRECIO", _precioController, 1, _numeroType), 
+
           //NOMBRE
           _inputPublicacion("NOMBRE", _nombreController, 1, _textoType),
 
           //DESCRPCION
-          
-          _inputPublicacion("DESCRIPCION", _descripcionController, 10, _textoType),
+          _inputPublicacion("DESCRIPCION", _descripcionController, 10, _multiLineType),
 
-          //PRECIO   ---AQUI VALIDAR Q SEA SOLONUMERO
-          _inputPublicacion("PRECIO", _precioController, 1, _numeroType), 
+          //FECHA CADUDIDAD
+          _inputPublicacion("FECHA CADUCIDAD DESHABILITADO", _fechaCaducidadController, 1, _dataType),
+          
+          if(_imagenSeleccionada != null) 
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 200.0,
+                width: 100.0,
+                child: Image.file(_imagenSeleccionada)
+              ),
+            ),
+
+          CircleAvatar(
+            radius: 30.0,
+            backgroundColor: Theme.of(context).primaryColor,
+            child: IconButton(
+              onPressed: ()async{
+                var camara = await ImagePicker.pickImage(source: ImageSource.camera);
+                //final XFile? galeria = await _picker.pickImage(source: ImageSource.gallery);         AQUI EL DE LA GALERIA HACER UN FI
+                setState(() {
+                  _imagenSeleccionada = camara as File ;
+                });
+              },
+              icon: const Icon(Icons.camera_alt_rounded),
+              color: Colors.white,
+            ),
+          ),
 
 
           //BOTON PARA AGREGAR A LA BD
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 100.0),
-            child: MaterialButton(
-              color: Colors.redAccent,
-              onPressed: ()=> {FirestoreHelper.crearPublicacion(PublicacionModel(
-                categoria : _categoriaController.text,
-                descripcion : _descripcionController.text,
-                id_user : idUsuario,
-                nombre : _nombreController.text,
-                precio : _precioController.text,
-              ))},
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).primaryColor)
+              ),
+              onPressed: (){
+                var imageId = const   Uuid().v1();
+                FirestoreHelper.crearPublicacion(_imagenSeleccionada ,PublicacionModel(
+                  categoria : _categoriaController.text,
+                  descripcion : _descripcionController.text,
+                  id_user : idUsuario,
+                  nombre : _nombreController.text,
+                  precio : int.parse(_precioController.text),
+                  idImagen: imageId
+                ));
+              },
               child: Container(
                 child:const Text("AGREGAR PUBLICACIÓN")
               ), 
@@ -99,14 +144,22 @@ class _venderViewState extends State<venderView> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        color: Colors.white,
-        child: TextFormField(
-          maxLines: cantidadLineas,
-          keyboardType: tipoTexto,
-          controller: controlador,
-          decoration:  InputDecoration(
-            border: const OutlineInputBorder(),
-            hintText: texto,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+          color: Theme.of(context).backgroundColor,
+        ),
+        
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: TextFormField(
+            maxLines: cantidadLineas,
+            keyboardType: tipoTexto,
+            controller: controlador,
+            decoration:  InputDecoration(
+              border: const UnderlineInputBorder(),
+              hintText: texto,
+ 
+            ),
           ),
         ),
       ),

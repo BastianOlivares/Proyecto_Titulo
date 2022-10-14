@@ -1,9 +1,19 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:market_place/main.dart';
 import 'package:market_place/model/publicacionesModel.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:async';
 
 class FirestoreHelper {
+
+  String pathImages = 'publicaciones/';
+  
 
   static Stream<List<PublicacionModel>> read(){
     final coleccionPublicaciones = FirebaseFirestore.instance.collection('publicaciones'); //nombre de la coleccion de la BD
@@ -11,7 +21,34 @@ class FirestoreHelper {
   }
 
 
-  static Future crearPublicacion(PublicacionModel publicacion) async{
+  static Future crearPublicacion(File imagenSeleccionada /*FILE*/, PublicacionModel publicacion) async{
+    String urlImage = '';
+
+    if(imagenSeleccionada != null) {
+      final  filePath = 'publicaciones/${publicacion.idImagen}.jpg';
+ 
+      final storegeRef = FirebaseStorage.instance.ref();
+
+      try {
+        final uploadTask = storegeRef 
+                          .child(filePath)
+                          .putFile(imagenSeleccionada);
+
+        //AQUI FALTA OBTENER AL URL YA Q NO ME LA ACEPTA :c
+        // uploadTask.whenComplete(() async{
+        //   urlImage = await storegeRef.getDownloadURL();
+        //   print(urlImage);
+        // });
+        
+        
+      }
+      catch(e) {
+        print("OCURRIO EL ERRO: $e");
+      }
+  
+    }
+    
+
     final coleccionPublicaciones = FirebaseFirestore.instance.collection('publicaciones'); //nombre de la coleccion de la BD
     
     final docRef = coleccionPublicaciones.doc(); //nombre del documento dentro de la coleccion de la BD
@@ -22,6 +59,7 @@ class FirestoreHelper {
       id_user : publicacion.id_user,
       nombre : publicacion.nombre,
       precio : publicacion.precio,
+      idImagen : publicacion.idImagen,
     ).toJson();
 
     try{
@@ -29,6 +67,9 @@ class FirestoreHelper {
     }catch(e){
       print("ha ocurrido el error $e");
     }   
+
+    
+
     
   }
 }
