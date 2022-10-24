@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
+import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 
 class menuView extends StatefulWidget {
   const menuView({super.key});
@@ -133,16 +134,16 @@ class _menuViewState extends State<menuView> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton(
-                                          onPressed: (){}, 
+                                          onPressed: () => showDialogPublicacion(context, documentSnapshot), 
                                           child: const Text("Ver"),
                                           style: ButtonStyle(
-                                          shape: MaterialStateProperty.all(
-                                            RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(70.0),
+                                            shape: MaterialStateProperty.all(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(70.0),
+                                              ),
                                             ),
+                                            backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
                                           ),
-                                          backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
-                                        ),
                                         ),
                                       ),
                                     ],

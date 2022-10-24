@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 class buscarView extends StatefulWidget {
   const buscarView({super.key});
 
@@ -11,7 +12,7 @@ class buscarView extends StatefulWidget {
 }
 
 class _buscarViewState extends State<buscarView> {
-  double rating = 10;
+  double _currentValue = 50000;
   List<String> listaFiltros = [];
 
   static Future<QuerySnapshot> getPublicaiones(List<String> lista) async {
@@ -63,7 +64,7 @@ class _buscarViewState extends State<buscarView> {
             child: Text("CATEGORIA"),
           ),
 
-          Expanded(
+          Flexible(
             child: FutureBuilder(
               future: getCategorias(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -114,11 +115,11 @@ class _buscarViewState extends State<buscarView> {
                   );
                 }
                 else{
-                  return Center(
-                    child: Container(
+                  return const Center(
+                    child:  SizedBox(
                       width: 40.0,
                       height: 40.0,
-                      child: CircularProgressIndicator(),
+                      child:  CircularProgressIndicator(),
                     ),
                   );
                 }
@@ -132,14 +133,14 @@ class _buscarViewState extends State<buscarView> {
           ),
 
           Slider(
-            value: rating,
+            value: _currentValue,
             onChanged: (newRating) {
-              setState(() => rating = newRating);
+              setState(() => _currentValue = newRating);
             },
             min: 0,
             max: 50000 ,
             divisions: 20,
-            label: "\$${rating.toInt()}",
+            label: "\$${_currentValue.toInt()}",
             activeColor: Theme.of(context).primaryColor,
             inactiveColor: Theme.of(context).cardColor,
           ),
@@ -164,23 +165,164 @@ class _buscarViewState extends State<buscarView> {
                     width: double.infinity,
                     height: 500.0,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor
-                      ),
-                      child: Column(
-                        children: [
-                          Text(documentSnapshot['nombre']),
-                          Text(documentSnapshot['categoria']),
-                          Text(documentSnapshot['descripcion']),
-                          Text(documentSnapshot['precio'].toString()),
-                          if(!documentSnapshot['idImagen'].isEmpty) Expanded(child: Image.network(documentSnapshot['idImagen'])),
-                          
-                          ElevatedButton(
-                            onPressed: (){}, 
-                            child: const Text("VER"),
+                      decoration: BoxDecoration(  //CAJA VERDE DE FONDO
+                        color: Theme.of(context).cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3),
                           )
-                        ],
+                        ]
                       ),
+                      
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
+                        child: Row(
+                          children: [
+
+                            //MITAD DEL BOX DE LA IMAGEN
+                            Expanded(
+                              child: Container(
+                                height: double.infinity,
+                                width: 100.0,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: const  BorderRadius.only(
+                                    bottomLeft: Radius.circular(20.0),
+                                    topLeft: Radius.circular(20.0),
+                                  ),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                      documentSnapshot['idImagen'],
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            //MITAD DEL BOX DE LA INFORMACION
+                            Expanded(
+                              child: Container(
+                                height: double.infinity,
+                                width: 100.0,
+                                decoration: const  BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(20.0),
+                                    topRight: Radius.circular(20.0),
+                                  )
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+
+                                      //TITULO DEL PRODUCTO
+                                      Expanded(
+                                        flex: 1,
+                                        child: Center(
+                                          child: Text(
+                                            documentSnapshot['nombre'],
+                                            style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                            maxLines: 1,
+                                          ),
+                                        )
+                                      ),
+
+                                      //CATEGORÍA PERTENECIENTE
+                                      Expanded(
+                                        flex: 1,
+                                        child: Row(
+                                          children: [
+                                            const Text(
+                                              "Categoria: ",
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+
+                                            Text(
+                                              documentSnapshot['categoria'],
+                                            ),
+                                          ],
+                                        )
+                                      ),
+
+                                      //DESCRIPCION DEL PRODUCTO
+                                      Expanded(
+                                        flex: 6,
+                                        child: Column(
+                                          children: [
+                                            const Text(
+                                              "Descripción: ",
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+
+                                            Expanded(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Container(                                                 
+                                                  width: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10.0),
+                                                    color: const Color.fromARGB(87, 158, 158, 158),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: ListView(
+                                                      children: [
+                                                        Text("${documentSnapshot['descripcion']}"),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ),
+
+                                      //PRECIO Y BOTN PARA VER LA PUBLICACIÓN COMPLETA
+                                      Expanded(
+                                        flex: 1,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+
+                                            //PRECIO
+                                            Text(
+                                              "\$${documentSnapshot['precio']}",
+                                              style: const TextStyle(fontSize:20, fontWeight: FontWeight.bold),
+                                            ),
+
+                                            //BOTON
+                                            ElevatedButton(
+                                              onPressed: ()=> showDialogPublicacion(context, documentSnapshot),
+                                              style: ButtonStyle(
+                                                shape: MaterialStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(70.0),
+                                                  ),
+                                                ),
+                                                backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
+                                              ), 
+                                              child: const Text("VER"),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    
+
+                                    ],
+                                  ),
+                                ),
+                                
+                              )
+                            )
+                          ]
+                        ),
+                      )
                     ),
                   ),
                 );
@@ -188,8 +330,8 @@ class _buscarViewState extends State<buscarView> {
             );
           }
           else{
-            return Center(
-              child: Container(
+            return const Center(
+              child:  SizedBox(
                 width: 40.0,
                 height: 40.0,
                 child: CircularProgressIndicator(),

@@ -45,22 +45,22 @@ class _MyAppState extends State<MyApp> {
       },
       debugShowCheckedModeBanner: false,
       home: StreamBuilder (
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if(snapshot.connectionState ==  ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState ==  ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          else if (snapshot.hasError) {
+            return const Center(child: Text("ALGO SALIO MAL"));
+          }
+          else if(snapshot.hasData) {
+            return  menu();
+          }
+          else {
+            return  loginPage();
+          }
         }
-        else if (snapshot.hasError) {
-          return const Center(child: Text("ALGO SALIO MAL"));
-        }
-        else if(snapshot.hasData) {
-          return  menu();
-        }
-        else {
-          return  loginPage();
-        }
-      }
-    ),
+      ),
     );
   }
 }

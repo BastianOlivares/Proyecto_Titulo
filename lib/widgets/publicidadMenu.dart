@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 
 
 //widget
@@ -93,7 +94,7 @@ class _publicidadMenuState extends State<publicidadMenu> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton(
-                                          onPressed: (){}, 
+                                          onPressed: () => showDialogPublicacion(context, documentSnapshot), 
                                           child: const Text("Ver"),
                                           style: ButtonStyle(
                                           shape: MaterialStateProperty.all(
