@@ -8,6 +8,7 @@ class PublicacionModel {
   final String nombre;
   final int precio;
   final String idImagen;
+  final DateTime fechaPublicacion;
 
   const PublicacionModel({
     required this.categoria, 
@@ -16,6 +17,7 @@ class PublicacionModel {
     required this.nombre, 
     required this.precio,
     required this.idImagen,
+    required this.fechaPublicacion,
   });
 
   factory PublicacionModel.fromSnapShot(DocumentSnapshot snap) {
@@ -28,6 +30,7 @@ class PublicacionModel {
       nombre : snapshot['nombre'],
       precio : snapshot['precio'],
       idImagen: snapshot['idImagen'],
+      fechaPublicacion: snapshot['fechaPublicacion'],
     );
   }
 
@@ -39,6 +42,7 @@ class PublicacionModel {
       nombre: json['nombre'] as String,
       precio: json['precio'] as int,
       idImagen: json['idImagen'] as String,
+      fechaPublicacion: json['fechaPublicacion'] as DateTime,
     );
 
   Map<String, Object?> toJson() => {
@@ -47,6 +51,7 @@ class PublicacionModel {
     "id_user" : id_user,
     "nombre" : nombre,
     "precio" : precio,
-    "idImagen" : idImagen
+    "idImagen" : idImagen,
+    "fechaPublicacion" : fechaPublicacion,
   };
 }

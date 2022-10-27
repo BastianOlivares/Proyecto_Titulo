@@ -29,12 +29,14 @@ class _venderViewState extends State<venderView> {
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
-  final TextEditingController _fechaCaducidadController = TextEditingController();
+  TextEditingController _fechaCaducidadController = TextEditingController();
 
   final TextInputType _textoType =TextInputType.text;
   final TextInputType _numeroType = TextInputType.number;
   final TextInputType _multiLineType = TextInputType.multiline;
   final TextInputType _dataType = TextInputType.datetime;
+
+
 
   //VARIABLES DE IMAGENES
   var _imagenSeleccionada = null;
@@ -82,7 +84,55 @@ class _venderViewState extends State<venderView> {
           _inputPublicacion("DESCRIPCION", _descripcionController, 10, _multiLineType),
 
           //FECHA CADUDIDAD
-          _inputPublicacion("FECHA CADUCIDAD DESHABILITADO", _fechaCaducidadController, 1, _dataType),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+                      color: Theme.of(context).backgroundColor,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: TextField (
+                        controller: _fechaCaducidadController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.calendar_month_rounded),
+                          labelText: "Fecha caducidad"
+                        ),
+                        onTap: () async{
+                          DateTime? fecha = await showDatePicker(
+                            context: context, 
+                            initialDate: DateTime.now(), 
+                            firstDate: DateTime(2000), 
+                            lastDate: DateTime(2101)
+                          );
+
+                          if(fecha != null) {
+                            setState(() {
+                              _fechaCaducidadController.text = fecha as String ;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  
+                ),
+
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+                      color: Theme.of(context).backgroundColor,
+                    ),
+                  ),
+                )
+              ]
+            ),
+          ),
           
           if(_imagenSeleccionada != null) 
             Padding(
@@ -147,6 +197,8 @@ class _venderViewState extends State<venderView> {
                 backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).primaryColor)
               ),
               onPressed: (){
+                var fechaPublicacion = DateTime.now(); //Desde esta var puedo sumar o restar horas
+                //var fechaMaximaPublicacio =fechaPublicacion.add(const Duration(hours: 24));
                 var imageId = const   Uuid().v1();
                 FirestoreHelper.crearPublicacion(_imagenSeleccionada ,PublicacionModel(
                   categoria : _categoriaController.text,
@@ -154,7 +206,8 @@ class _venderViewState extends State<venderView> {
                   id_user : idUsuario,
                   nombre : _nombreController.text,
                   precio : int.parse(_precioController.text),
-                  idImagen: imageId
+                  idImagen: imageId,
+                  fechaPublicacion : fechaPublicacion
                 ));
               },
               child: Container(

@@ -58,6 +58,7 @@ class FirestoreHelper {
       nombre : publicacion.nombre,
       precio : publicacion.precio,
       idImagen : urlImage,
+      fechaPublicacion: publicacion.fechaPublicacion
     ).toJson();
 
     try{
