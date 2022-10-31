@@ -43,6 +43,8 @@ dependencies:
   image_picker:   #se uso una version antigua por que fue la que me funciono en el momento
   uuid: 
   firebase_auth:
+  intl: ^0.17.0
+  email_validator: ^2.1.17
 
   
 

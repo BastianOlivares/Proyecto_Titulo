@@ -28,7 +28,7 @@ class _loginPageState extends State<loginPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Material App',
+      title: 'ExFood',
       home: Scaffold(
         body: Container(
           width: double.infinity,
@@ -127,12 +127,6 @@ class _loginPageState extends State<loginPage> {
                               backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).focusColor)
                             ),
                             onPressed: sigIn,
-                            // (() => {
-                            //   Navigator.push(
-                            //     context, 
-                            //     MaterialPageRoute(builder: (context) => menu())
-                            //   )
-                            // }),
                             child: const Text(
                               "Iniciar Sesión", 
                               style: TextStyle(fontSize: 20), 
@@ -148,7 +142,13 @@ class _loginPageState extends State<loginPage> {
                                 style: TextStyle(color: Colors.white),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context, 
+                                    MaterialPageRoute(builder: (context) => registerPage())
+                                  );
+                                  
+                                },
                                 style: TextButton.styleFrom(
                                   foregroundColor: Theme.of(context).focusColor,
                                 ), 
@@ -184,6 +184,7 @@ class _loginPageState extends State<loginPage> {
         email: _correoController.text.trim(),
         password: _contraseniaController.text,
       );
+      Navigator.pop(context);
     }
     on FirebaseAuthException catch (e) {
       print(e);

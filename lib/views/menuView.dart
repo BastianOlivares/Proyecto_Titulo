@@ -153,10 +153,6 @@ class _menuViewState extends State<menuView> {
                             ),
                           ),
                         )
-                        // Text("CATEGORIA: ${documentSnapshot['categoria']}"),
-                        // Text("NOMBRE: ${documentSnapshot['nombre']}"),
-                        // Text("DESCRIPCION: ${documentSnapshot['descripcion']}"),
-                        // Text("PRECIO: \$${documentSnapshot['precio']}"),
                       ],
                     )
                   );
@@ -167,10 +163,10 @@ class _menuViewState extends State<menuView> {
         }
         else {
           return Center(
-            child: Container(
+            child:  Container(
               width: 40.0,
               height: 40.0,
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             ),
           );
         }

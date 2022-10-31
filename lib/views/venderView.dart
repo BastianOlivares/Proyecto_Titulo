@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,11 +26,13 @@ class _venderViewState extends State<venderView> {
   String nombreUsuario = 'Bastian Olivares';
 
   //VARIABLES LOCALES PARA LOS CONTROLERS
-  final TextEditingController _categoriaController = TextEditingController();
-  final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _descripcionController = TextEditingController();
-  final TextEditingController _precioController = TextEditingController();
+  TextEditingController _categoriaController = TextEditingController();
+  TextEditingController _nombreController = TextEditingController();
+  TextEditingController _descripcionController = TextEditingController();
+  TextEditingController _precioController = TextEditingController();
   TextEditingController _fechaCaducidadController = TextEditingController();
+  TextEditingController _fechaMaxCaducidadController = TextEditingController();
+  final TextEditingController _stockController = TextEditingController();
 
   final TextInputType _textoType =TextInputType.text;
   final TextInputType _numeroType = TextInputType.number;
@@ -39,7 +42,10 @@ class _venderViewState extends State<venderView> {
 
 
   //VARIABLES DE IMAGENES
-  var _imagenSeleccionada = null;
+  var _imagenSeleccionada;
+
+  //VARIABLES CATEGORIA
+  String _categoria = "seleccione su categoria";
 
   
 
@@ -71,6 +77,7 @@ class _venderViewState extends State<venderView> {
           ),
 
           //----INPUTS----//
+
           //CATEGORIA
           _inputPublicacion("CATEGORIA", _categoriaController, 1, _textoType),
 
@@ -95,44 +102,114 @@ class _venderViewState extends State<venderView> {
                       color: Theme.of(context).backgroundColor,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: TextField (
-                        controller: _fechaCaducidadController,
+                        controller: _fechaCaducidadController,               
                         decoration: const InputDecoration(
                           icon: Icon(Icons.calendar_month_rounded),
-                          labelText: "Fecha caducidad"
+                          labelText: "FECHA DE CADUCIDAD"
                         ),
                         onTap: () async{
                           DateTime? fecha = await showDatePicker(
                             context: context, 
                             initialDate: DateTime.now(), 
                             firstDate: DateTime(2000), 
-                            lastDate: DateTime(2101)
+                            lastDate: DateTime(2101),
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: const ColorScheme.light(
+                                    primary:  Color.fromRGBO(255, 93, 162, 1),// <-- SEE HERE
+                                    onPrimary: Colors.white, // <-- SEE HERE
+                                    onSurface:  Colors.black, 
+                                  ),
+                                ),
+                                child: child!,
+                              ); 
+                            },
                           );
 
                           if(fecha != null) {
                             setState(() {
-                              _fechaCaducidadController.text = fecha as String ;
+                              _fechaCaducidadController.text = DateFormat('yyyy-MM-dd').format(fecha);
+                              var pivoteFechaMaxima = fecha.subtract(const Duration(hours: 24));
+                              _fechaMaxCaducidadController.text = DateFormat('yyyy-MM-dd').format(pivoteFechaMaxima);
                             });
                           }
                         },
                       ),
                     ),
                   ),
-                  
                 ),
+                
+                const Expanded(child: SizedBox())
+              ],
+            ),
+          ),
 
+          //FFECHA MAXIMA DE PUBLICACION
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: [
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
                       color: Theme.of(context).backgroundColor,
                     ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        enabled: false,
+                        controller: _fechaMaxCaducidadController,
+                        style: const TextStyle(color: Colors.grey),
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.calendar_month_rounded),
+                          labelText: "FECHA MAXIMA PUBLICACIÓN"
+                        ),
+                      ),
+                    ),
                   ),
-                )
-              ]
+                ),
+
+                const Expanded(child: SizedBox())
+              ],
             ),
           ),
+
+          //STOCK DE L A PUBLICAION
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+                      color: Theme.of(context).backgroundColor,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        controller: _stockController,
+                        decoration:  const InputDecoration(
+                          border:  UnderlineInputBorder(),
+                          hintText: "STOCK",
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const Expanded(child: SizedBox())
+              ],
+            ),
+          ),
+
+          
+              
           
           if(_imagenSeleccionada != null) 
             Padding(
@@ -200,18 +277,29 @@ class _venderViewState extends State<venderView> {
                 var fechaPublicacion = DateTime.now(); //Desde esta var puedo sumar o restar horas
                 //var fechaMaximaPublicacio =fechaPublicacion.add(const Duration(hours: 24));
                 var imageId = const   Uuid().v1();
-                FirestoreHelper.crearPublicacion(_imagenSeleccionada ,PublicacionModel(
+                FirestoreHelper.crearPublicacion(context,_imagenSeleccionada ,PublicacionModel(
                   categoria : _categoriaController.text,
                   descripcion : _descripcionController.text,
                   id_user : idUsuario,
                   nombre : _nombreController.text,
                   precio : int.parse(_precioController.text),
                   idImagen: imageId,
-                  fechaPublicacion : fechaPublicacion
-                ));
+                  fechaPublicacion : fechaPublicacion,
+                  fechaCaducidad: DateTime.parse(_fechaCaducidadController.text),
+                  fechaMaximaPublicacion: DateTime.parse(_fechaMaxCaducidadController.text),
+                  stock: int.parse(_stockController.text),
+                )); 
+                setState(() {
+                  _categoriaController = TextEditingController();
+                  _nombreController = TextEditingController();
+                  _descripcionController = TextEditingController();
+                  _precioController = TextEditingController();
+                  _fechaCaducidadController = TextEditingController();
+                  _fechaMaxCaducidadController = TextEditingController();
+                });               
               },
               child: Container(
-                child:const Text("AGREGAR PUBLICACIÓN")
+                child: const Text("AGREGAR PUBLICACIÓN")
               ), 
             ),
           ),
@@ -231,7 +319,7 @@ class _venderViewState extends State<venderView> {
         ),
         
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.all(10.0),
           child: TextFormField(
             maxLines: cantidadLineas,
             keyboardType: tipoTexto,
@@ -248,4 +336,5 @@ class _venderViewState extends State<venderView> {
   }
 
 }
+
 

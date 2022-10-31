@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:market_place/pages/personalRegister.dart';
 import 'package:market_place/views/buscarView.dart';
 import 'package:market_place/views/menuView.dart';
 import 'package:market_place/views/venderView.dart';
@@ -16,23 +20,31 @@ class menu extends StatefulWidget {
 }
 
 class _menuState extends State<menu> {
+  
+  //RESCATAR DATOS DEL USUARIO Q ENTRO
+  final auth = FirebaseAuth.instance.currentUser!;
+  late String uid;
 
+  //VARIABLES PARA EL GNAV
   int _paginaActual = 1;
   List <Widget> paginas = [
-    venderView(),
-    menuView(),
-    buscarView()
+    const venderView(),
+    const menuView(),
+    const buscarView()
   ];
+
 
   @override
   Widget build(BuildContext context) {
+    inputUidUser();  
+    esUsuarioNuevo(uid);
     return Scaffold(
       //APPBAR
       appBar: AppBar(
       /////////////////////////////////////////////// INTENTAR MODULAR EN appBar
         backgroundColor: Theme.of(context).primaryColor,
         //automaticallyImplyLeading: false,
-        title: Text("EXFood"),
+        title: Text(uid),
         actions: <Widget> [
           IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -107,6 +119,26 @@ class _menuState extends State<menu> {
         ),
       ), 
     );
+  }
+
+  void inputUidUser() {
+    uid = (auth.uid).toString();
+  }
+
+  void esUsuarioNuevo(String uid) async {
+
+    final snapshot= await FirebaseFirestore.instance.collection('usuarios').doc(uid).get();
     
+    if(!snapshot.exists){
+      
+      Navigator.push(
+        context, 
+        MaterialPageRoute(builder: (context) => personalRegisterPage(uid),)
+      );
+    }
   }
 }
+
+
+
+
