@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:market_place/pages/perfilPage.dart';
 import 'package:market_place/pages/personalRegister.dart';
 import 'package:market_place/views/buscarView.dart';
 import 'package:market_place/views/menuView.dart';
@@ -22,16 +23,18 @@ class menu extends StatefulWidget {
 class _menuState extends State<menu> {
   
   //RESCATAR DATOS DEL USUARIO Q ENTRO
-  final auth = FirebaseAuth.instance.currentUser!;
+  User auth = FirebaseAuth.instance.currentUser!;
   late String uid;
 
   //VARIABLES PARA EL GNAV
   int _paginaActual = 1;
-  List <Widget> paginas = [
-    const venderView(),
+  late List <Widget> paginas = [
+    venderView(uid),
     const menuView(),
     const buscarView()
   ];
+
+
 
 
   @override
@@ -52,7 +55,9 @@ class _menuState extends State<menu> {
           ),
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: ()=>{}
+            onPressed: ()=>{
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  perfilPage(uid)))
+            }
           ), 
           IconButton(
             icon: const Icon(Icons.settings),

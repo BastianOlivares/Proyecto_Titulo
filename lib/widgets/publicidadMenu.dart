@@ -15,22 +15,22 @@ class publicidadMenu extends StatefulWidget {
 class _publicidadMenuState extends State<publicidadMenu> {
   
   ///Extrae todos los datos dela BD sin ninguna query
-  Future getData() async {
+  getData()  {
     var firestore = FirebaseFirestore.instance;
-    QuerySnapshot qn = await firestore.collection("publicaciones").get();
-    return qn;
+    return firestore.collection("publicaciones").snapshots();
+    
   }  
   
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getData(),
-      builder: (context, snapshot) {
+    return StreamBuilder(
+      stream: getData(),
+      builder: (context, AsyncSnapshot snapshot) {
         if(snapshot.hasData) {
           return Swiper(
             viewportFraction: 0.8,
             scale: 0.9,
-            itemCount: 3, ///EL SWIPER SE ENCARGA DE  SOLO MOSTRAR LOS PRIMEROS 3 ELEMNTOS DE TODAS LAS PUBLICAIONES
+            itemCount: snapshot.data.size == 0 ? 0 :3, ///EL SWIPER SE ENCARGA DE  SOLO MOSTRAR LOS PRIMEROS 3 ELEMNTOS DE TODAS LAS PUBLICAIONES
             pagination: const SwiperPagination(),
             control: const SwiperControl(),
             itemBuilder: (BuildContext context,int index){
@@ -94,7 +94,7 @@ class _publicidadMenuState extends State<publicidadMenu> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton(
-                                          onPressed: () => showDialogPublicacion(context, documentSnapshot), 
+                                          onPressed: () => showDialogPublicacion(context, documentSnapshot, false), 
                                           child: const Text("Ver"),
                                           style: ButtonStyle(
                                           shape: MaterialStateProperty.all(

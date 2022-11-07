@@ -15,16 +15,16 @@ class _buscarViewState extends State<buscarView> {
   double _currentValue = 50000;
   List<String> listaFiltros = [];
 
-  static Future<QuerySnapshot> getPublicaiones(List<String> lista) async {
+  getPublicaiones(List<String> lista)  {
     final refPublicicacion  = FirebaseFirestore.instance.collection("publicaciones");
 
     if(lista.isEmpty){
       print("arreglo vacio");
-      return refPublicicacion.get();
+      return refPublicicacion.snapshots();
     }   
     else {
       print("arreglo no vacio");
-      return refPublicicacion.where("categoria", whereIn: lista).get();
+      return refPublicicacion.where("categoria", whereIn: lista).snapshots();
     }            
   }
 
@@ -151,8 +151,8 @@ class _buscarViewState extends State<buscarView> {
 
   Widget publicaiones() {
     return Expanded(
-      child: FutureBuilder(
-        future: getPublicaiones(listaFiltros),
+      child: StreamBuilder(
+        stream: getPublicaiones(listaFiltros),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if(snapshot.hasData) {
             return ListView.builder(
@@ -172,7 +172,7 @@ class _buscarViewState extends State<buscarView> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           )
                         ]
                       ),
@@ -298,7 +298,7 @@ class _buscarViewState extends State<buscarView> {
 
                                             //BOTON
                                             ElevatedButton(
-                                              onPressed: ()=> showDialogPublicacion(context, documentSnapshot),
+                                              onPressed: ()=> showDialogPublicacion(context, documentSnapshot, false),
                                               style: ButtonStyle(
                                                 shape: MaterialStateProperty.all(
                                                   RoundedRectangleBorder(

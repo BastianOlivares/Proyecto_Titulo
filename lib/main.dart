@@ -4,7 +4,6 @@ import 'package:market_place/pages/loginPage.dart';
 import 'package:market_place/pages/menu.dart';
 import 'package:market_place/pages/registerPage.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:market_place/widgets/navitaroBar.dart';
 
 
 //void main() => runApp(const MyApp());
@@ -40,8 +39,8 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: const Color.fromRGBO(255, 253 , 214, 1),
       ),
       routes: <String, WidgetBuilder>{
-        '/menu': (BuildContext context) => menu(),
-        '/register': (BuildContext context) => registerPage(), //register()
+        '/menu': (BuildContext context) => const menu(),
+        '/register': (BuildContext context) => const registerPage(), //register()
       },
       debugShowCheckedModeBanner: false,
       home: StreamBuilder (
@@ -54,10 +53,10 @@ class _MyAppState extends State<MyApp> {
             return const Center(child: Text("ALGO SALIO MAL"));
           }
           else if(snapshot.hasData) {
-            return  menu();
+            return  const menu();
           }
           else {
-            return  loginPage();
+            return  const loginPage();
           }
         }
       ),

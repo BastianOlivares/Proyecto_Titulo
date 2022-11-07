@@ -1,29 +1,23 @@
 
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
-import 'package:market_place/widgets/publicidadMenu.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../model/publicacionesModel.dart';
 import 'package:uuid/uuid.dart';
 
 class venderView extends StatefulWidget {
-  const venderView({super.key});
+  final String idUser;
+  const venderView(this.idUser,{super.key});
 
   @override
   State<venderView> createState() => _venderViewState();
 }
 
 class _venderViewState extends State<venderView> {
-
-  //VARIABLES PARA LOS DATOS DEL USUARIO
-  String idUsuario = 'Q1mREi1iIhiW9b9vC3nM';
-  String nombreUsuario = 'Bastian Olivares';
 
   //VARIABLES LOCALES PARA LOS CONTROLERS
   TextEditingController _categoriaController = TextEditingController();
@@ -37,7 +31,6 @@ class _venderViewState extends State<venderView> {
   final TextInputType _textoType =TextInputType.text;
   final TextInputType _numeroType = TextInputType.number;
   final TextInputType _multiLineType = TextInputType.multiline;
-  final TextInputType _dataType = TextInputType.datetime;
 
 
 
@@ -51,6 +44,7 @@ class _venderViewState extends State<venderView> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.idUser);
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
@@ -280,10 +274,11 @@ class _venderViewState extends State<venderView> {
                 FirestoreHelper.crearPublicacion(context,_imagenSeleccionada ,PublicacionModel(
                   categoria : _categoriaController.text,
                   descripcion : _descripcionController.text,
-                  id_user : idUsuario,
+                  id_user : widget.idUser,
                   nombre : _nombreController.text,
                   precio : int.parse(_precioController.text),
                   idImagen: imageId,
+                  imagenPath: '',
                   fechaPublicacion : fechaPublicacion,
                   fechaCaducidad: DateTime.parse(_fechaCaducidadController.text),
                   fechaMaximaPublicacion: DateTime.parse(_fechaMaxCaducidadController.text),

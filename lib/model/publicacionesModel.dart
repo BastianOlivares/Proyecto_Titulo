@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:market_place/widgets/publicidadMenu.dart';
 
 class PublicacionModel {
   final String categoria;
@@ -8,6 +7,7 @@ class PublicacionModel {
   final String nombre;
   final int precio;
   final String idImagen;
+  final String imagenPath;
   final DateTime fechaPublicacion;
   final DateTime fechaCaducidad;
   final DateTime fechaMaximaPublicacion;
@@ -20,6 +20,7 @@ class PublicacionModel {
     required this.nombre, 
     required this.precio,
     required this.idImagen,
+    required this.imagenPath,
     required this.fechaPublicacion,
     required this.fechaCaducidad,
     required this.fechaMaximaPublicacion,
@@ -36,6 +37,7 @@ class PublicacionModel {
       nombre : snapshot['nombre'],
       precio : snapshot['precio'],
       idImagen: snapshot['idImagen'],
+      imagenPath: snapshot['imagenPath'],
       fechaPublicacion: snapshot['fechaPublicacion'],
       fechaCaducidad: snapshot['fechaCaducidad'],
       fechaMaximaPublicacion: snapshot['fechaMaximaPublicacion'],
@@ -51,6 +53,7 @@ class PublicacionModel {
       nombre: json['nombre'] as String,
       precio: json['precio'] as int,
       idImagen: json['idImagen'] as String,
+      imagenPath: json['imagenPath'] as String,
       fechaPublicacion: json['fechaPublicacion'] as DateTime,
       fechaCaducidad: json['fechaCaducidad'] as DateTime,
       fechaMaximaPublicacion: json['fechaMaximaPublicacion'] as DateTime,
@@ -64,6 +67,7 @@ class PublicacionModel {
     "nombre" : nombre,
     "precio" : precio,
     "idImagen" : idImagen,
+    "imagenPath" : imagenPath,
     "fechaPublicacion" : fechaPublicacion,
     "fechaCaducidad": fechaCaducidad,
     "fechaMaximaPublicacion": fechaMaximaPublicacion,

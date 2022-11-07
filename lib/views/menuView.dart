@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:market_place/pages/menu.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
 import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 
@@ -13,9 +14,11 @@ class menuView extends StatefulWidget {
 
 class _menuViewState extends State<menuView> {
 
+  int limitePublicacionesVerticales = 4;
+
   getDataCategoria(String categoria) {
     var firestore = FirebaseFirestore.instance;
-    return firestore.collection("publicaciones").where('categoria', isEqualTo: categoria).get();
+    return firestore.collection("publicaciones").where('categoria', isEqualTo: categoria).snapshots();
   }
 
   @override
@@ -57,105 +60,132 @@ class _menuViewState extends State<menuView> {
       )
     );
   }
-
   //WIDGET CON LAS PUBLICACIONES HORIZAONTALES POR CATEGORIA
   /*
   *Comentarios: revisar si es necesario el FUTURE
   */
   Widget _publicaionesCateoria(String categoria) {
-    return FutureBuilder(
-      future: getDataCategoria(categoria),
-      builder: (context, snapshot) {
-        if(snapshot.hasData) {
+    return StreamBuilder(
+      stream: getDataCategoria(categoria),
+      builder: (context, AsyncSnapshot snapshot) {
+          if(snapshot.hasData) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: SizedBox(
               height: 300.0,
               //width: 600.0,
               child: ListView.builder( 
-                itemCount: 3,
+                itemCount: snapshot.data!.size == 0 ? 0 :limitePublicacionesVerticales,
                 scrollDirection:  Axis.horizontal,
                 itemBuilder: (BuildContext context,int index) {
-                  final documentSnapshot = (snapshot.data! as QuerySnapshot).docs[index];
-                  return Container(
-                    width: 250.0,
-                    margin:const  EdgeInsets.all(10.0),
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      children: [
-
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            width: double.infinity,
-                            color: Theme.of(context).primaryColor,
-                            child: Image.network(
-                              documentSnapshot['idImagen'],
-                              height: double.infinity,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          
+                  if(index == limitePublicacionesVerticales - 1) {
+                    return Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: ElevatedButton(
+                        onPressed: (){
+                          //AQUI FALTA Q EL BOTON LLEVE AL BUSCAR CON EL FILTRO APLICADO
+                        }, 
+                        style: ButtonStyle (
+                          backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).cardColor),
                         ),
+                        child: const Icon(
+                          Icons.arrow_circle_right_rounded,
+                          size: 50.0,
+                        ),
+                      ),
+                    );
+                  }
+                  else
+                  {  
+                    final documentSnapshot = (snapshot.data! as QuerySnapshot).docs[index];
+                    return Container(
+                      width: 250.0,
+                      margin:const  EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 3,
+                            offset: const Offset(5, 5),
+                          )
+                        ]
+                      ),
+                      child: Column(
+                        children: [
 
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Center(
-                                    child: Text(
-                                      documentSnapshot['nombre'],
-                                      style: const TextStyle(fontSize: 35.0, fontWeight: FontWeight.bold),
-                                    )
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              width: double.infinity,
+                              color: Theme.of(context).primaryColor,
+                              child: Image.network(
+                                documentSnapshot['idImagen'],
+                                height: double.infinity,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            
+                          ),
+
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              width: double.infinity,
+                              color: Colors.white,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        documentSnapshot['nombre'],
+                                        style: const TextStyle(fontSize: 35.0, fontWeight: FontWeight.bold),
+                                      )
+                                    ),
                                   ),
-                                ),
 
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "\$${documentSnapshot['precio']}",
-                                          style: const TextStyle(color: Colors.black, fontSize: 25.0, fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ElevatedButton(
-                                          onPressed: () => showDialogPublicacion(context, documentSnapshot), 
-                                          child: const Text("Ver"),
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty.all(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(70.0),
-                                              ),
-                                            ),
-                                            backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "\$${documentSnapshot['precio']}",
+                                            style: const TextStyle(color: Colors.black, fontSize: 25.0, fontWeight: FontWeight.bold),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
+                                  
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ElevatedButton(
+                                            onPressed: () => showDialogPublicacion(context, documentSnapshot, false),
+                                            style: ButtonStyle(
+                                              shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(70.0),
+                                                ),
+                                              ),
+                                              backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
+                                            ), 
+                                            child: const Text("Ver"),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        )
-                      ],
-                    )
-                  );
+                          )
+                        ],
+                      )
+                    );
+                  }
                 }//convertirlo a .builder
               ),
             ),
@@ -170,6 +200,7 @@ class _menuViewState extends State<menuView> {
             ),
           );
         }
+
       }
     );
   }
