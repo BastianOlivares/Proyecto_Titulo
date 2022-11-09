@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:market_place/main.dart';
 import 'package:market_place/model/publicacionesModel.dart';
+import 'package:market_place/model/reservarProductoModel.dart';
 import 'package:market_place/model/usuariosModel.dart';
 import 'package:market_place/pages/menu.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
@@ -50,7 +51,9 @@ class FirestoreHelper {
     final nuevoUsuario = UsuarioModel(
       nombre: usuario.nombre, 
       apellido: usuario.apellido, 
-      numeroTelefonico: usuario.numeroTelefonico
+      numeroTelefonico: usuario.numeroTelefonico,
+      tipoUsuario: usuario.tipoUsuario,
+      localAsociado: usuario.localAsociado
     ).toJson();
 
     try{
@@ -146,12 +149,85 @@ class FirestoreHelper {
     }   
   }
 
+  //AGREGAR UNA RESERVA DE UN PRODUCTO
+  static crearReservaProducto(QueryDocumentSnapshot<Object?> publicacion, String idComprador, int cantidad, String idPublicacion, String idVendedor) async {
+    final coleccionPublicaciones = FirebaseFirestore.instance.collection('solicitudReservaProducto'); //nombre de la coleccion de la BD
+    final docRef = coleccionPublicaciones.doc();
+    final nuevaSolicitud = ReservarProductoModel(
+      idComprador: idComprador, 
+      cantidad: cantidad, 
+      idPublicacion: idPublicacion, 
+      idVendedor: idVendedor
+    ).toJson();
+    try {
+      await docRef.set(nuevaSolicitud);
+    }
+    catch (e) {
+      print(e);
+    }
+    editarStock(publicacion, cantidad, 1);
+  }
+
+  //EDITAR STOCK
+  //0 => suma
+  //1=> resta
+  static editarStock(QueryDocumentSnapshot<Object?> publicacion, int cantidad, int operacion) async {
+
+    var stockPublicacion = publicacion['stock'];
+
+    late int stockTotal;
+
+    if(operacion == 0) {
+      stockTotal = (stockPublicacion + cantidad);
+    }
+    else {
+      stockTotal = (stockPublicacion - cantidad);
+    }
+    final docRef = FirebaseFirestore.instance.collection('publicaciones').doc(publicacion.id);
+    try {
+      await docRef.update({
+        "stock" : stockTotal,
+      });
+    }
+    catch (e) {
+      print("aaaaaaaa");
+    }
+    
+  }
+
+  static editarStockAsyncSnapshot(AsyncSnapshot<dynamic> publicacion, String idPublicacion, int cantidad, int operacion) async {
+
+    var stockPublicacion = publicacion.data.data()['stock'];
+
+    late int stockTotal;
+
+    if(operacion == 0) {
+      stockTotal = (stockPublicacion + cantidad);
+    }
+    else {
+      stockTotal = (stockPublicacion - cantidad);
+    }
+    final docRef = FirebaseFirestore.instance.collection('publicaciones').doc(idPublicacion);
+    try {
+      await docRef.update({
+        "stock" : stockTotal,
+      });
+    }
+    catch (e) {
+      print("aaaaaaaa");
+    }
+    
+  }
+  
+  
+
   //EDITA UNA PUBLICAION SIN LA IMAGEN
   static Future<void> editarPublicacion(
   QueryDocumentSnapshot<Object?> publicacion, 
   String nombre,
   String categoria,
   String descripcion,
+  DateTime fechaCaducidad,
   int precio
   ) async {
     final docRef = FirebaseFirestore.instance.collection('publicaciones').doc(publicacion.id);
@@ -188,5 +264,12 @@ class FirestoreHelper {
     await fotogeRef.delete();
   }
 
+  //ELINMINAR RESERVA
+  static eliminarReserva(String idReserva) {
+    final docRef = FirebaseFirestore.instance.collection('solicitudReservaProducto').doc(idReserva);
+    docRef.delete().then((value) => {
+      print('Eliminado Exitosamente'),
+    });
+  }
 
 }

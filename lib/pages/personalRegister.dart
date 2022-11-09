@@ -151,7 +151,7 @@ class _personalRegisterPageState extends State<personalRegisterPage> {
                                     ),
                                     autovalidateMode: AutovalidateMode.onUserInteraction,
                                     validator: ((value) => 
-                                      value != null && value.length < 8
+                                      value != null && value.length != 8
                                       ? 'Ingresar número de teléfono valido '
                                       : null
                                     ),
@@ -171,12 +171,15 @@ class _personalRegisterPageState extends State<personalRegisterPage> {
                                 FirestoreHelper.crearUsuario(context, widget.uid, UsuarioModel(
                                   nombre: _nombreController.text, 
                                   apellido: _apellidoController.text, 
-                                  numeroTelefonico: _telefonoController.text
+                                  numeroTelefonico: _telefonoController.text,
+                                  tipoUsuario: 'cliente',
+                                  localAsociado: ''
                                 ));
                                 Navigator.pop(context);
+                                setState(() {});
                               },
                               child: const Text(
-                                "Restrarse", 
+                                "Registrarse", 
                                 style: TextStyle(fontSize: 20), 
                                 
                               )

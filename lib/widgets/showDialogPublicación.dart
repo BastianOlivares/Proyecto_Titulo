@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:market_place/pages/editarPublicacionPage.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
 import 'package:market_place/widgets/alertDialogConfirmarElimnarPublicacion.dart';
+import 'package:market_place/widgets/alertDialogReservarProducto.dart';
 import 'package:market_place/widgets/showDialogEditarImagen.dart';
 
 
@@ -141,6 +142,7 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
                             seccionInformacion("Precio", "\$${publicacion['precio']}"),
                             seccionInformacion("Fecha de publicación", "${DateFormat('dd-MM-yy').format(publicacion['fechaPublicacion'].toDate())  }"),
                             seccionInformacion("Fecha de caducidad", "${DateFormat('dd-MM-yy').format(publicacion['fechaCaducidad'].toDate())  }"),
+                            seccionInformacion("Stock", "${publicacion['stock']}"),
 
                             editar == true 
                             ? Padding(
@@ -178,7 +180,22 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
                                 ],
                               ),
                             )
-                            : //NO DEVULVE NADA
+                            : Visibility(
+                              visible: publicacion['stock'] == 0 ?false :true,
+                              child: FloatingActionButton.extended(
+                                  elevation: 50.0,
+                                  
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  onPressed: (){
+                                    alertDialogReservarPorducto(context, publicacion);
+                                  },
+                                  label: const Text(
+                                    'Reservar ',
+                                    style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold)
+                                  ),
+                                  icon: const Icon(Icons.check_circle_outline_rounded),
+                                ),
+                            ),
                               
                             const SizedBox(height: 20.0),
 

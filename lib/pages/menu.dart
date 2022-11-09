@@ -47,7 +47,7 @@ class _menuState extends State<menu> {
       /////////////////////////////////////////////// INTENTAR MODULAR EN appBar
         backgroundColor: Theme.of(context).primaryColor,
         //automaticallyImplyLeading: false,
-        title: Text(uid),
+        title: Text(uid),//Text("ExFood"),
         actions: <Widget> [
           IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -58,15 +58,8 @@ class _menuState extends State<menu> {
             onPressed: ()=>{
               Navigator.push(context, MaterialPageRoute(builder: (context) =>  perfilPage(uid)))
             }
-          ), 
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: ()=>{}
-          ),
-          IconButton(
-            icon: const Icon(Icons.add_shopping_cart),
-            onPressed: ()=>{}
-          ),
+          )
+          , 
         ],
       ),
       /////////////////////////////////////////////////
@@ -141,6 +134,17 @@ class _menuState extends State<menu> {
         MaterialPageRoute(builder: (context) => personalRegisterPage(uid),)
       );
     }
+  }
+
+  usuarioLogeadoCompleto(String uid) async {
+
+    final snapshot= await FirebaseFirestore.instance.collection('usuarios').doc(uid).get();
+    
+    if(!snapshot.exists){
+      return false;
+    }
+
+    return true;
   }
 }
 

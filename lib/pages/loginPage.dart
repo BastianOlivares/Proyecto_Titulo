@@ -187,6 +187,25 @@ class _loginPageState extends State<loginPage> {
       Navigator.pop(context);
     }
     on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder: ((context) {
+        return AlertDialog(
+        title: const Text("¡Algo salio Mal!"),
+        content: const  Text("Datos ingresados son incorrectos"),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+            }, 
+            child:const Text("Volver")
+          )
+        ],
+      );
+      })
+    );
       print(e);
     }
 

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:market_place/pages/reservasPage.dart';
 import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 
 class perfilPage extends StatefulWidget {
@@ -13,6 +14,7 @@ class perfilPage extends StatefulWidget {
 
 class _perfilPageState extends State<perfilPage> {
   
+  bool tieneLocalAsociado = false;
 
   @override
   void setState(VoidCallback fn) {
@@ -45,9 +47,15 @@ class _perfilPageState extends State<perfilPage> {
           title: const Text("PERFIL"),
           actions: <Widget>[
             IconButton(
+              icon: const Icon(Icons.messenger_outline_rounded),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => reservasPage(widget.uid),)),
+            ),
+
+            IconButton(
               icon: const Icon(Icons.arrow_back_outlined),
               onPressed: () => Navigator.pop(context),
-            )
+            ),
+            
           ],
         ),
         body: Container(
@@ -91,6 +99,9 @@ class _perfilPageState extends State<perfilPage> {
                             stream: getDataUser(widget.uid),
                             builder: (context, AsyncSnapshot snapshot) {
                               if (snapshot.hasData) {
+                                snapshot.data.data()['localAsociado'] == '' 
+                                ? tieneLocalAsociado = false 
+                                : tieneLocalAsociado = true;
                                 return Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Container(
@@ -178,7 +189,7 @@ class _perfilPageState extends State<perfilPage> {
                         Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Expanded(
-                            flex: 4,
+                            flex: 5,
                             child: Container(
                               width: double.infinity,
                               height: 200.0,
@@ -190,10 +201,28 @@ class _perfilPageState extends State<perfilPage> {
                                 padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   children: [
-                                     Expanded(
+                                    Expanded(
                                       flex: 1,
                                       child:  mostrarLabelDatos('DATOS DE LA EMPRESA'),
                                     ),
+                                    Expanded(
+                                      flex: 5,
+                                      child: tieneLocalAsociado == false
+                                      ? const Center(
+                                        child: Text(
+                                          "No hay Datos De Local",
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
+                                          )
+                                        )
+                                      : ListView(
+                                        children: const [
+                                          Text("aaaaaa"),
+                                          Text("aaaaaa"),
+                                          Text("aaaaaa"),
+                                          Text("aaaaaa"),
+                                        ],
+                                      )
+                                    )
                                   ],
                                 ),
                               ),
@@ -204,7 +233,7 @@ class _perfilPageState extends State<perfilPage> {
                         //PUBLICACIONES DEL USUARIO
                         mostrarLabelDatos('TUS PUBLICACIONES'),
                         Expanded(
-                          flex: 5,
+                          flex: 4,
                           child: StreamBuilder(
                             stream: FirebaseFirestore.instance.collection('publicaciones').where('id_user', isEqualTo: widget.uid).snapshots(),
                             builder: (context, AsyncSnapshot snapshot) {

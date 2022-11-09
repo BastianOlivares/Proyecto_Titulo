@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 class buscarView extends StatefulWidget {
   const buscarView({super.key});
@@ -15,16 +16,19 @@ class _buscarViewState extends State<buscarView> {
   double _currentValue = 50000;
   List<String> listaFiltros = [];
 
+  //ORDENADO POR FECHA DE CADUCIDAD
   getPublicaiones(List<String> lista)  {
     final refPublicicacion  = FirebaseFirestore.instance.collection("publicaciones");
 
     if(lista.isEmpty){
       print("arreglo vacio");
-      return refPublicicacion.snapshots();
+      return refPublicicacion.orderBy("fechaCaducidad").snapshots();
     }   
     else {
       print("arreglo no vacio");
-      return refPublicicacion.where("categoria", whereIn: lista).snapshots();
+      return refPublicicacion.where("categoria", whereIn: lista).snapshots(); 
+      // No puede ordenar su consulta por cualquier campo incluido en una cláusula de igualdad ( = ) o in .
+      // https://firebase.google.com/docs/firestore/query-data/order-limit-data  [al final de las limitacion, final de pagina]
     }            
   }
 
@@ -61,10 +65,14 @@ class _buscarViewState extends State<buscarView> {
 
           const Padding(
             padding:  EdgeInsets.all(8.0),
-            child: Text("CATEGORIA"),
+            child: Text(
+              "CATEGORIAS",
+              style: TextStyle(color: Colors.white ,fontSize: 50, fontWeight: FontWeight.bold),
+            ),
           ),
 
           Flexible(
+            flex: 2,
             child: FutureBuilder(
               future: getCategorias(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -127,23 +135,11 @@ class _buscarViewState extends State<buscarView> {
             ),
           ),
 
-          const Padding(
-            padding:  EdgeInsets.all(8.0),
-            child: Text("RANGO DE PRECIO"),
-          ),
 
-          Slider(
-            value: _currentValue,
-            onChanged: (newRating) {
-              setState(() => _currentValue = newRating);
-            },
-            min: 0,
-            max: 50000 ,
-            divisions: 20,
-            label: "\$${_currentValue.toInt()}",
-            activeColor: Theme.of(context).primaryColor,
-            inactiveColor: Theme.of(context).cardColor,
-          ),
+          Expanded(
+            flex: 1,
+            child: Container(),
+          )
         ],
       ),
     );
@@ -244,6 +240,23 @@ class _buscarViewState extends State<buscarView> {
 
                                             Text(
                                               documentSnapshot['categoria'],
+                                            ),
+                                          ],
+                                        )
+                                      ),
+
+                                      //FECHA CADUCIDAD
+                                      Expanded(
+                                        flex: 1,
+                                        child: Row(
+                                          children: [
+                                            const Text(
+                                              "Fecha Caducidad: ",
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+
+                                            Text(
+                                              DateFormat('dd-MM-yyyy').format(documentSnapshot['fechaCaducidad'].toDate())
                                             ),
                                           ],
                                         )

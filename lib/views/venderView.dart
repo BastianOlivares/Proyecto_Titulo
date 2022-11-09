@@ -1,10 +1,13 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
+import 'package:market_place/widgets/navitaroBar.dart';
 
 import '../model/publicacionesModel.dart';
 import 'package:uuid/uuid.dart';
@@ -31,6 +34,12 @@ class _venderViewState extends State<venderView> {
   final TextInputType _textoType =TextInputType.text;
   final TextInputType _numeroType = TextInputType.number;
   final TextInputType _multiLineType = TextInputType.multiline;
+
+  static Future<QuerySnapshot> getCategorias() async {
+    final refCategorias = FirebaseFirestore.instance.collection("categorias");
+    
+    return refCategorias.get();
+  }
 
 
 
@@ -73,7 +82,32 @@ class _venderViewState extends State<venderView> {
           //----INPUTS----//
 
           //CATEGORIA
-          _inputPublicacion("CATEGORIA", _categoriaController, 1, _textoType),
+          Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+              color: Theme.of(context).backgroundColor,
+            ),
+            
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextFormField(
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                controller: _categoriaController,
+                decoration: const InputDecoration(
+                  border:  UnderlineInputBorder(),
+                  hintText: "Categoria",
+    
+                ),
+                onTap: () async {
+                  String elegido = await elegirCategoria();
+                },
+              ),
+            ),
+          ),
+        ),
 
           //PRECIO   ---AQUI VALIDAR Q SEA SOLONUMERO
           _inputPublicacion("PRECIO", _precioController, 1, _numeroType), 
@@ -327,6 +361,76 @@ class _venderViewState extends State<venderView> {
           ),
         ),
       ),
+    );
+  }
+
+  elegirCategoria() {
+    showDialog(
+      context: context, 
+      builder: (context) {
+        return  Padding(
+          padding: const EdgeInsets.fromLTRB(30, 400, 30, 400),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  const Expanded(
+                    child: Text('CATEGORIA')
+                  ),
+
+                  const Expanded(
+                    child: Text('Elija su categoria')
+                  ),
+
+                  FutureBuilder(
+                    future: getCategorias(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if(!snapshot.hasData) {
+                        return const Center(
+                          child:  SizedBox(
+                            width: 40.0,
+                            height: 40.0,
+                            child:  CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      return Expanded(
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data.size,
+                          itemBuilder: (context, index) {
+                            final documentSnapshot = (snapshot.data as QuerySnapshot).docs[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: FloatingActionButton.extended(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    _categoriaController.text = documentSnapshot['nombre'];
+                                  });
+                                },
+                                label: Text(
+                                  documentSnapshot['nombre'],
+                                  style: const TextStyle(color: Colors.white , fontWeight: FontWeight.bold)
+                                ),
+                              ),
+                            );
+                          }
+                        ),
+                      );
+                    }
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 

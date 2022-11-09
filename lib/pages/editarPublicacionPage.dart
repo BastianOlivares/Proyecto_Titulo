@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
+
 
 class editarPublicacionPage extends StatefulWidget {
   final QueryDocumentSnapshot<Object?> publicacion;
@@ -14,23 +16,22 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
   
   @override
   Widget build(BuildContext context) {
-    
+
+
     TextEditingController _nombreController = TextEditingController();
     TextEditingController _categoriaController = TextEditingController();
     TextEditingController _descripcionController = TextEditingController();
     TextEditingController _precioController = TextEditingController();
+    TextEditingController _fechaCaducidadController = TextEditingController();
+
+
+
     _nombreController.text = widget.publicacion['nombre'];
     _categoriaController.text = widget.publicacion['categoria'];
     _descripcionController.text = widget.publicacion['descripcion'];
     _precioController.text = widget.publicacion['precio'].toString();
-
-    @override
-    void initState() {
-      super.initState();
-      setState(() {
-        
-      });
-    }
+    _fechaCaducidadController.text = DateFormat('dd-MM-yyyy').format(widget.publicacion['fechaCaducidad'].toDate());
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -89,6 +90,11 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                             padding: const EdgeInsets.all(20.0),
                             child: ListView(
                               children: [
+
+                                //FECHA DE CADUCIDAD
+                                Text("falta editar la fecha"),
+                                const SizedBox(height: 20.0,),
+
                                 //NOMBRE DEL PRODUCTO
                                 inputEditar(_nombreController, "NOMBRE : ", TextInputType.text, 1),
                                 const SizedBox(height: 20.0,),
@@ -105,18 +111,22 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                                 inputEditar(_precioController, "PRECIO : ", TextInputType.number, 1),
                                 const SizedBox(height: 20.0,),
 
+                                
+
                                 //BOTON EDITAR
                                 ElevatedButton(
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).focusColor)
                                   ),
                                   onPressed: (){
+                                    DateTime auxFechaCaducidad = DateTime.parse(_fechaCaducidadController.text);
                                     FirestoreHelper.editarPublicacion(
                                       widget.publicacion, 
                                       _nombreController.text,
                                       _categoriaController.text, 
                                       _descripcionController.text,
-                                      int.parse(_precioController.text)
+                                      auxFechaCaducidad,
+                                      int.parse(_precioController.text), 
                                     );
                                     Navigator.pop(context);
                                     
