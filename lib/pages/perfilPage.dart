@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:market_place/pages/agregarLocalAsociado.dart';
 import 'package:market_place/pages/reservasPage.dart';
 import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 
@@ -93,16 +94,16 @@ class _perfilPageState extends State<perfilPage> {
                         ),
                          
                         //DATOS PERSONALES DEL USUARIO
-                        Expanded(
-                          flex: 4,
-                          child: StreamBuilder(
-                            stream: getDataUser(widget.uid),
-                            builder: (context, AsyncSnapshot snapshot) {
-                              if (snapshot.hasData) {
-                                snapshot.data.data()['localAsociado'] == '' 
-                                ? tieneLocalAsociado = false 
-                                : tieneLocalAsociado = true;
-                                return Padding(
+                        StreamBuilder(
+                          stream: getDataUser(widget.uid),
+                          builder: (context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              snapshot.data.data()['localAsociado'] == '' 
+                              ? tieneLocalAsociado = false 
+                              : tieneLocalAsociado = true;
+                              return Expanded(
+                                flex: 4,
+                                child: Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Container(
                                     width: double.infinity,
@@ -115,13 +116,13 @@ class _perfilPageState extends State<perfilPage> {
                                       padding: const EdgeInsets.all(10.0),
                                       child: Column(
                                         children: [
-
+                              
                                           //TITULO DATOS PERSONALES
                                           Expanded(
                                             flex: 1,
                                             child:  mostrarLabelDatos('DATOS PERSONALES') 
                                           ),
-
+                              
                                           //NOMBRE Y APELLIDO
                                           Expanded(
                                             flex: 3,
@@ -133,7 +134,7 @@ class _perfilPageState extends State<perfilPage> {
                                               ],
                                             )
                                           ),
-
+                              
                                           //CORREO
                                           Expanded(
                                             flex: 3,
@@ -145,7 +146,7 @@ class _perfilPageState extends State<perfilPage> {
                                               ],
                                             )
                                           ),
-
+                              
                                           //NUMERO TELEFONICO
                                           Expanded(
                                             flex: 3,
@@ -156,7 +157,7 @@ class _perfilPageState extends State<perfilPage> {
                                               ],
                                             )
                                           ),
-
+                              
                                           //BOTON EDITAR
                                           Expanded(
                                             flex: 1,
@@ -171,18 +172,18 @@ class _perfilPageState extends State<perfilPage> {
                                               icon:  const Icon(Icons.edit_note_rounded),
                                             ),
                                           )
-
-
+                              
+                              
                                         ],
                                       ),
                                     ),
                                   ),
-                                );
-                              } else {
-                                return const Text("Cargando...");
-                              }
+                                ),
+                              );
+                            } else {
+                              return const Text("Cargando...");
                             }
-                          ),
+                          }
                         ),
 
                         //DATOS DE LA EMPRESA
@@ -208,11 +209,34 @@ class _perfilPageState extends State<perfilPage> {
                                     Expanded(
                                       flex: 5,
                                       child: tieneLocalAsociado == false
-                                      ? const Center(
-                                        child: Text(
-                                          "No hay Datos De Local",
-                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
-                                          )
+                                      ? Center(
+                                        child: Column(
+                                          children: [
+                                            const Expanded(
+                                              flex: 2,
+                                              child:  Text(
+                                                "No hay Datos De Local",
+                                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
+                                                ),
+                                            ),
+
+                                            Expanded(
+                                              flex: 1,
+                                              child: FloatingActionButton.extended(
+                                                elevation: 50.0,
+                                                backgroundColor: const Color.fromRGBO(255, 93, 162, 1), 
+                                                onPressed: () {
+                                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => const agregarLocalAsociado())));
+                                                },
+                                                label: const Text(
+                                                  'Asociar un Local',
+                                                  style: TextStyle(color: Colors.white ,fontSize: 15, fontWeight: FontWeight.bold)
+                                                ),
+                                                icon:  const Icon(Icons.edit_note_rounded),
+                                              ),
+                                            )
+                                          ],
+                                        )
                                         )
                                       : ListView(
                                         children: const [

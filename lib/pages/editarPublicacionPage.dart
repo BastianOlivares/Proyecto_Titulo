@@ -14,24 +14,27 @@ class editarPublicacionPage extends StatefulWidget {
 
 class _editarPublicacionPageState extends State<editarPublicacionPage> {
   
+  TextEditingController _nombreController = TextEditingController();
+  TextEditingController _categoriaController = TextEditingController();
+  TextEditingController _descripcionController = TextEditingController();
+  TextEditingController _precioController = TextEditingController();
+  TextEditingController _fechaCaducidadController = TextEditingController();
+
+  
+  
+  Future<QuerySnapshot> getCategorias() async {
+    final refCategorias = FirebaseFirestore.instance.collection("categorias");
+    
+    return refCategorias.get();
+  }
   @override
   Widget build(BuildContext context) {
-
-
-    TextEditingController _nombreController = TextEditingController();
-    TextEditingController _categoriaController = TextEditingController();
-    TextEditingController _descripcionController = TextEditingController();
-    TextEditingController _precioController = TextEditingController();
-    TextEditingController _fechaCaducidadController = TextEditingController();
-
-
-
     _nombreController.text = widget.publicacion['nombre'];
     _categoriaController.text = widget.publicacion['categoria'];
     _descripcionController.text = widget.publicacion['descripcion'];
     _precioController.text = widget.publicacion['precio'].toString();
     _fechaCaducidadController.text = DateFormat('dd-MM-yyyy').format(widget.publicacion['fechaCaducidad'].toDate());
-    
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -100,7 +103,33 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                                 const SizedBox(height: 20.0,),
 
                                 //CATEGORIA DEL PRODUCTO
-                                inputEditar(_categoriaController, "CATEGORIA : ", TextInputType.text, 1),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).canvasColor,
+                                    borderRadius: BorderRadius.circular(10.0)
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: TextFormField(
+                                      maxLines: 1,
+                                      keyboardType: TextInputType.text,
+                                      controller: _categoriaController,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        labelText: "CATEGORIA: ",
+                                        labelStyle: TextStyle(
+                                          color: Colors.white
+                                        )
+                                      ),
+                                      style: const TextStyle(
+                                        color:  Colors.white,
+                                      ),
+                                      onTap: () async {
+                                        String elegido = await elegirCategoria();
+                                      },
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(height: 20.0,),
 
                                 //DESCRIPCION DEL PRODUCTO
@@ -164,6 +193,7 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
         ),
       ),
     );
+    
   }
 
   Widget inputEditar(TextEditingController controlador, String label, TextInputType inputType, int maxLineas) {
@@ -190,6 +220,85 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
           )
         ),
       ),
+    );
+  }
+
+  elegirCategoria() {
+    showDialog(
+      context: context, 
+      builder: (context) {
+        return  Padding(
+          padding: const EdgeInsets.fromLTRB(30, 400, 30, 400),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'CATEGORIA',
+                      style: TextStyle(color: Colors.black, fontSize: 15,),
+                    )
+                  ),
+
+                  const Expanded(
+                    child: Text(
+                      'Elija su categoria',
+                      style: TextStyle(
+                        color: Colors.black, fontSize: 15,
+                        decoration: TextDecoration.underline
+                      ), 
+                    )
+                  ),
+
+                  FutureBuilder(
+                    future: getCategorias(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if(!snapshot.hasData) {
+                        return const Center(
+                          child:  SizedBox(
+                            width: 40.0,
+                            height: 40.0,
+                            child:  CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      return Expanded(
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data.size,
+                          itemBuilder: (context, index) {
+                            final documentSnapshot = (snapshot.data as QuerySnapshot).docs[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: FloatingActionButton.extended(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    _categoriaController.text = documentSnapshot['nombre'];
+                                  });
+                                },
+                                label: Text(
+                                  documentSnapshot['nombre'],
+                                  style: const TextStyle(color: Colors.white , fontWeight: FontWeight.bold)
+                                ),
+                              ),
+                            );
+                          }
+                        ),
+                      );
+                    }
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }

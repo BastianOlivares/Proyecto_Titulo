@@ -1,9 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.market_place">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="market_place"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBrVQpgmU6lo_zsSPoy5xxiSe90e2xy7Kw"/>
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
