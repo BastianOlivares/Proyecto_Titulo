@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:market_place/main.dart';
+import 'package:market_place/model/localAsociadoModel.dart';
 import 'package:market_place/model/publicacionesModel.dart';
 import 'package:market_place/model/reservarProductoModel.dart';
 import 'package:market_place/model/usuariosModel.dart';
@@ -151,8 +152,8 @@ class FirestoreHelper {
 
   //AGREGAR UNA RESERVA DE UN PRODUCTO
   static crearReservaProducto(QueryDocumentSnapshot<Object?> publicacion, String idComprador, int cantidad, String idPublicacion, String idVendedor) async {
-    final coleccionPublicaciones = FirebaseFirestore.instance.collection('solicitudReservaProducto'); //nombre de la coleccion de la BD
-    final docRef = coleccionPublicaciones.doc();
+    final coleccionSolicitudes = FirebaseFirestore.instance.collection('solicitudReservaProducto'); //nombre de la coleccion de la BD
+    final docRef = coleccionSolicitudes.doc();
     final nuevaSolicitud = ReservarProductoModel(
       idComprador: idComprador, 
       cantidad: cantidad, 
@@ -166,6 +167,36 @@ class FirestoreHelper {
       print(e);
     }
     editarStock(publicacion, cantidad, 1);
+  }
+
+  static crearLocalAsociado(String uid, LocalAsociadoModel local) async {
+    final coleccionLocalAsociado = FirebaseFirestore.instance.collection('localAsociado');
+    final localRef = coleccionLocalAsociado.doc();
+    final nuevoLocal = LocalAsociadoModel(
+      nombre: local.nombre, 
+      direccion: local.direccion, 
+      contacto: local.contacto, 
+      correo: local.correo
+    ).toJson();
+
+    try {
+      await localRef.set(nuevoLocal);
+    }
+    catch (e) {
+      print(e);
+    }
+
+    final coleccionUsarios = FirebaseFirestore.instance.collection('usuarios');
+    final usuarioRef = coleccionUsarios.doc(uid);
+
+    try {
+      usuarioRef.update({
+        "localAsociado" : localRef.id,
+      });
+    }
+    catch (e) {
+      print(e);
+    }
   }
 
   //EDITAR STOCK

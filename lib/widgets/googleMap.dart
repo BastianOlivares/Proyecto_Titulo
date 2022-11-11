@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapHelper {
+  static double latitud = 0.0;
+  static double longitud = 0.0;
   static final Completer<GoogleMapController> _controller = Completer();
 
   static CameraPosition direccionNueva =  const CameraPosition(
@@ -39,7 +41,6 @@ class GoogleMapHelper {
         onDone: (Address address) {
           latitud = address.coords!.latitude;
           longitud = address.coords!.longitude;
-          
         }
       ), 
     );
@@ -74,7 +75,7 @@ class GoogleMapHelper {
                                 labelText: "Direccion",
                               ),
                               onTap: () async { 
-                                await buscarDireccion(context, direccionController, latitud, longitud);
+                                buscarDireccion(context, direccionController, latitud, longitud); 
                                 direccionNueva = CameraPosition(
                                   target: LatLng(latitud, longitud),
                                   zoom: 17,
