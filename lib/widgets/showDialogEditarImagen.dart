@@ -29,10 +29,14 @@ void showDialogEditarImagen(BuildContext context, QueryDocumentSnapshot<Object?>
 
               Expanded(
                 flex: 9,
-                child: Image.network(
-                  publicacion['idImagen'],
-                  fit: BoxFit.contain,
-                )
+                child: publicacion['idImagen'].isEmpty == true
+                  ? const Center(child: Icon(Icons.image_not_supported_rounded, size: 50.0, color: Colors.white,))
+                  : Image.network(
+                    publicacion['idImagen'],
+                    fit: BoxFit.contain,
+                  )
+                
+                
               ),
 
               Expanded(

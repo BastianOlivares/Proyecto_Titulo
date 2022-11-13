@@ -1,10 +1,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:market_place/pages/menu.dart';
+import 'package:market_place/pages/recuperarContraseniaPage.dart';
 import 'package:market_place/pages/registerPage.dart';
-import 'package:market_place/ruter.dart';
 
 
 class loginPage extends StatefulWidget {
@@ -138,14 +136,14 @@ class _loginPageState extends State<loginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text(
-                                "No tienes cuenta ExFood ", 
+                                "¿No tienes cuenta ExFood?", 
                                 style: TextStyle(color: Colors.white),
                               ),
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
                                     context, 
-                                    MaterialPageRoute(builder: (context) => registerPage())
+                                    MaterialPageRoute(builder: (context) => const registerPage())
                                   );
                                   
                                 },
@@ -153,6 +151,25 @@ class _loginPageState extends State<loginPage> {
                                   foregroundColor: Theme.of(context).focusColor,
                                 ), 
                                 child: const Text("¡REGISTRATE AQUI!")
+                              )
+                            ],
+                          ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "¿Olvidates tu contraseña? ", 
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const recuperarContraseniaPage(),));
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Theme.of(context).focusColor,
+                                ), 
+                                child: const Text("INGRESA AQUÍ")
                               )
                             ],
                           ) 

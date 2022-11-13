@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:market_place/main.dart';
 import 'package:market_place/pages/loginPage.dart';
 import 'package:market_place/pages/menu.dart';
 
@@ -10,9 +9,9 @@ Widget ruter() {
     initialRoute: '/',
     routes: {
       // Cuando naveguemos hacia la ruta "/", crearemos el Widget FirstScreen
-      '/': (context) => loginPage(),
+      '/': (context) => const loginPage(),
       // Cuando naveguemos hacia la ruta "/second", crearemos el Widget SecondScreen
-      '/second': (context) => menu(),
+      '/second': (context) => const  menu(),
     },
   );
 }

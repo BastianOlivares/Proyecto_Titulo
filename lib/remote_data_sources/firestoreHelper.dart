@@ -4,16 +4,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:market_place/main.dart';
 import 'package:market_place/model/localAsociadoModel.dart';
 import 'package:market_place/model/publicacionesModel.dart';
 import 'package:market_place/model/reservarProductoModel.dart';
 import 'package:market_place/model/usuariosModel.dart';
-import 'package:market_place/pages/menu.dart';
-import 'package:market_place/widgets/publicidadMenu.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:uuid/uuid.dart';
-import 'dart:async';
 
 class FirestoreHelper {
 
@@ -192,6 +186,7 @@ class FirestoreHelper {
     try {
       usuarioRef.update({
         "localAsociado" : localRef.id,
+        "tipoUsuario" : 'proveedor'
       });
     }
     catch (e) {
@@ -226,6 +221,8 @@ class FirestoreHelper {
     
   }
 
+
+  //EDITAR STOCK PERO CON ASYNCSNAPSHOT COMO ENTRADA
   static editarStockAsyncSnapshot(AsyncSnapshot<dynamic> publicacion, String idPublicacion, int cantidad, int operacion) async {
 
     var stockPublicacion = publicacion.data.data()['stock'];
@@ -249,6 +246,23 @@ class FirestoreHelper {
     }
     
   }
+
+  //EDITAR DATOS DEL USUARIO
+  static Future<void> editarDatosPersonales(
+      String idUSer,
+      //QueryDocumentSnapshot<Object?> usuario,
+      String nombre,
+      String apellido,
+      int telefono) async {
+    final docReff =
+        FirebaseFirestore.instance.collection('usuarios').doc(idUSer);
+
+    await docReff.update({
+      'nombre': nombre,
+      'apellido': apellido,
+      'numeroTelefonico': telefono
+    });
+  }
   
   
 
@@ -259,6 +273,7 @@ class FirestoreHelper {
   String categoria,
   String descripcion,
   DateTime fechaCaducidad,
+  DateTime fechaMaximaPublicacion,
   int precio
   ) async {
     final docRef = FirebaseFirestore.instance.collection('publicaciones').doc(publicacion.id);
@@ -267,17 +282,32 @@ class FirestoreHelper {
       "descripcion" : descripcion,
       "categoria" : categoria,
       "precio" : precio,
+      "fechaCaducidad" : fechaCaducidad,
+      "fechaMaximaPublicacion" : fechaMaximaPublicacion
     });
   }
 
+  //EDITAR IMAGEN
   static editarImagen( File imagen, QueryDocumentSnapshot<Object?> publicacion) async {
     final fotoRef = FirebaseStorage.instance.refFromURL(publicacion['idImagen']);
+    print(publicacion['idImagen']);
     try {
       await fotoRef.putFile(imagen);
     }
     catch (error) {
       print(error);
     }
+  }
+
+  //EDITAR LOCAL ASOCIADO
+  static editarLocalAsociado(String id, String nombre, String direccion, String correo,int contacto) async {
+    final localRef = FirebaseFirestore.instance.collection('localAsociado').doc(id);
+    await localRef.update({
+      "nombre" : nombre, 
+      "direccion" : direccion,
+      "correo" : correo,
+      "contacto" : contacto
+    });
   }
 
   //ELIMINA UNA PUBLICAICON INCLUYENDO LA IMAGEN
@@ -300,6 +330,18 @@ class FirestoreHelper {
     final docRef = FirebaseFirestore.instance.collection('solicitudReservaProducto').doc(idReserva);
     docRef.delete().then((value) => {
       print('Eliminado Exitosamente'),
+    });
+  }
+
+  static eliminarLocalAsociado(String idLocal, String idUsuario) async {
+    final usuarioRef = FirebaseFirestore.instance.collection('usuarios').doc(idUsuario) ;
+    await usuarioRef.update({
+      "tipoUsuario" : 'cliente',
+      "localAsociado" : '',
+    });
+    final localRef = FirebaseFirestore.instance.collection('localAsociado').doc(idLocal) ;
+    localRef.delete().then((value) => {
+      print('Eliminado correctamente')
     });
   }
 

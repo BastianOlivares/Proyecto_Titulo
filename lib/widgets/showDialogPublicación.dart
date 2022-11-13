@@ -14,6 +14,11 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
   
   var id= publicacion['id_user'];
 
+  getLocalAsociado(String id) {
+    var fireStore = FirebaseFirestore.instance;
+    return fireStore.collection("localAsociado").doc(id).snapshots();
+  }
+
 
   final docRef = FirebaseFirestore.instance.collection("usuarios").doc(id);
   docRef.get().then(
@@ -140,7 +145,7 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
 
                             //PRECIO DEL PRODUCTO
                             seccionInformacion("Precio", "\$${publicacion['precio']}"),
-                            seccionInformacion("Fecha de publicación", "${DateFormat('dd-MM-yy').format(publicacion['fechaPublicacion'].toDate())  }"),
+                            seccionInformacion("Fecha de publicación", DateFormat('dd-MM-yy').format(publicacion['fechaPublicacion'].toDate())),
                             seccionInformacion("Fecha de caducidad", "${DateFormat('dd-MM-yy').format(publicacion['fechaCaducidad'].toDate())  }"),
                             seccionInformacion("Stock", "${publicacion['stock']}"),
 
@@ -214,7 +219,35 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
                             //APELLIDO DEL PROVEEDOR
                             seccionInformacion("Apellido",proveedor['apellido'] ),
                             //NUMERO DEL PROVEEDOR
-                            seccionInformacion("Telefono", proveedor['numeroTelefonico']),
+                            seccionInformacion("Telefono", proveedor['numeroTelefonico'].toString()),
+
+
+                            Container(
+                              color: Theme.of(context).primaryColor,
+                              child: Center(
+                                child: tituloSeccion("DATOS DEL LOCAL ASOCIADO")
+                              ),
+                            ),
+
+                            proveedor['localAsociado'].isEmpty == false
+                            ? StreamBuilder(
+                              stream: getLocalAsociado(proveedor['localAsociado']),
+                              builder: (BuildContext context, AsyncSnapshot local) {
+                                if(!local.hasData) return const Center(child: Text('Cargando...'));
+                                return SizedBox(
+                                  height: 400.0,
+                                  child: Column(
+                                    children: [
+                                      Expanded(child: seccionInformacion("Nombre Local", local.data!.data()['nombre'])),
+                                      Expanded(child: seccionInformacion("Dirección Local", local.data!.data()['direccion'])),
+                                      Expanded(child: seccionInformacion("Contacto Local", local.data!.data()['contacto'].toString())),
+                                      Expanded(child: seccionInformacion("Correo Local", local.data!.data()['correo'])),
+                                    ],
+                                  ),
+                                );
+                              },
+                            )
+                            : seccionInformacion("EL PROVEEDOR NO TIENE UN LOCAL ASOCIADO", ''),
                             
                           ],
                         ),
@@ -246,7 +279,7 @@ Widget seccionInformacion(String label, String info) {
     padding: const EdgeInsets.all(10.0),
     child: Container(
       width: double.infinity,
-      height: 50.0,
+      height: 70.0,
       decoration: BoxDecoration(
         color: const Color.fromARGB(103, 171, 185, 109),
         borderRadius: BorderRadius.circular(10.0)
@@ -260,9 +293,11 @@ Widget seccionInformacion(String label, String info) {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
-            Text(
-              info,
-              style: const  TextStyle(fontSize: 25),
+            Flexible(
+              child: Text(
+                info,
+                style: const  TextStyle(fontSize: 25),
+              ),
             ),
           ]
         ),

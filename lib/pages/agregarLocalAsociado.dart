@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:market_place/model/localAsociadoModel.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
-import 'package:market_place/widgets/googleMap.dart';
 
 class agregarLocalAsociado extends StatefulWidget {
   const agregarLocalAsociado({super.key});
@@ -27,10 +26,10 @@ class _agregarLocalAsociadoState extends State<agregarLocalAsociado> {
     country: 'Chile',
   );
 
-  TextEditingController _nombreController = TextEditingController();
-  TextEditingController _direccionController = TextEditingController();
-  TextEditingController _contactoController = TextEditingController();
-  TextEditingController _correoController = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _direccionController = TextEditingController();
+  final TextEditingController _contactoController = TextEditingController();
+  final TextEditingController _correoController = TextEditingController();
 
   late var latitud;
   late var longitud;
@@ -117,6 +116,7 @@ class _agregarLocalAsociadoState extends State<agregarLocalAsociado> {
                                   autovalidateMode: AutovalidateMode.onUserInteraction,
                                   validator: ((value){ 
                                     if(value!.isEmpty) return 'Ingrese un nombre de Local';
+                                    return null;
                                   }),
                                 ),
                               ),
@@ -164,6 +164,7 @@ class _agregarLocalAsociadoState extends State<agregarLocalAsociado> {
                                   autovalidateMode: AutovalidateMode.onUserInteraction,
                                   validator: ((value){ 
                                     if(value!.isEmpty) return 'Ingrese una Dirección';
+                                    return null;
                                   }),
                                 ),
                               ),
@@ -199,6 +200,7 @@ class _agregarLocalAsociadoState extends State<agregarLocalAsociado> {
                                     if(value!.isEmpty) return 'Ingrese un número valido';
                                     if(value.length < 8) return 'Ingrese al menos 8 digitos';
                                     if(value.length > 8) return 'Ingrese al lo mas 8 digitos';
+                                    return null;
                                   }),
                                 ),
                               ),
@@ -233,6 +235,7 @@ class _agregarLocalAsociadoState extends State<agregarLocalAsociado> {
                                   validator: ((value){ 
                                     if(value!.isEmpty ) return 'Ingrese un correo valido';
                                     if(!EmailValidator.validate(value)) return 'Ingrese un correo valido';
+                                    return null;
                                   }),
                                 ),
                               ),
@@ -259,7 +262,7 @@ class _agregarLocalAsociadoState extends State<agregarLocalAsociado> {
                                     context: context, 
                                     builder: ((context) {
                                       return const AlertDialog(
-                                        title: Text("¡Atencioa!"),
+                                        title: Text("¡Atención!"),
                                         content: Text("Los datos del Local han sido guardados exitosamente"),
                                       );
                                     })

@@ -35,6 +35,8 @@ class _venderViewState extends State<venderView> {
   final TextInputType _numeroType = TextInputType.number;
   final TextInputType _multiLineType = TextInputType.multiline;
 
+  final _formKey = GlobalKey<FormState>();
+
   static Future<QuerySnapshot> getCategorias() async {
     final refCategorias = FirebaseFirestore.instance.collection("categorias");
     
@@ -62,278 +64,313 @@ class _venderViewState extends State<venderView> {
       ),
 
       margin: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: ListView(
-        children: <Widget> [
-
-          //---ENCABEZADO---///
-          //TITULO DE LA VISTA VENDER
-          const Center(
-            child: Text("PUBLICAR", style: TextStyle(fontSize: 50.0),),
-          ),
-
-          //DESCRIPCION DE LA VIEW VENDER
-          const Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Text("aqui podras realizar tuspublicaiones para subir a la base de datos las cuales seran guardas para una posterior revision",
-              style: TextStyle(fontSize: 20.0),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          children: <Widget> [
+      
+            //---ENCABEZADO---///
+            //TITULO DE LA VISTA VENDER
+            const Center(
+              child: Text(
+                "PUBLICAR", 
+                style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+      
+            //DESCRIPCION DE LA VIEW VENDER
+            const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text("Aquí podras realizar tus publicaiones para poder visualizarlas en la aplicaión, y de esta forma los usurios puedan reservar sus preferencias.",
+                style: TextStyle(fontSize: 20.0),
+              ),
+            ),
+      
+            //----INPUTS----//
+      
+            //CATEGORIA
+            Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius:  BorderRadius.circular(30.0),
+                color: Theme.of(context).backgroundColor,
+              ),
+              
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
+                  maxLines: 1,
+                  keyboardType: TextInputType.text,
+                  controller: _categoriaController,
+                  decoration: const InputDecoration(
+                    border:  InputBorder.none,
+                    hintText: "Categoria",
+          
+                  ),
+                  onTap: () async {
+                    String elegido = await elegirCategoria();
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: ((value){ 
+                    if(value!.isEmpty) return 'La categoría no puede esatr vacia.';
+                  }),
+                ),
+              ),
             ),
           ),
-
-          //----INPUTS----//
-
-          //CATEGORIA
-          Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
-              color: Theme.of(context).backgroundColor,
+      
+            //PRECIO   ---AQUI VALIDAR Q SEA SOLONUMERO
+            _inputPublicacion("PRECIO", _precioController, 1, _numeroType), 
+      
+            //NOMBRE
+            _inputPublicacion("NOMBRE", _nombreController, 1, _textoType),
+      
+            //DESCRPCION
+            _inputPublicacion("DESCRIPCION", _descripcionController, 10, _multiLineType),
+      
+            //FECHA CADUDIDAD
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:  BorderRadius.circular(30.0),
+                        color: Theme.of(context).backgroundColor,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField (
+                          controller: _fechaCaducidadController,               
+                          decoration: const InputDecoration(
+                            border:  InputBorder.none,
+                            icon: Icon(Icons.calendar_month_rounded),
+                            labelText: "FECHA DE CADUCIDAD"
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: ((value){ 
+                            if(value!.isEmpty) return 'La fecha no puede estar vacia';
+                          }),
+                          onTap: () async{
+                            DateTime? fecha = await showDatePicker(
+                              context: context, 
+                              initialDate: DateTime.now(), 
+                              firstDate: DateTime(2000), 
+                              lastDate: DateTime(2101),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: Theme.of(context).copyWith(
+                                    colorScheme: const ColorScheme.light(
+                                      primary:  Color.fromRGBO(255, 93, 162, 1),// <-- SEE HERE
+                                      onPrimary: Colors.white, // <-- SEE HERE
+                                      onSurface:  Colors.black, 
+                                    ),
+                                  ),
+                                  child: child!,
+                                ); 
+                              },
+                            );
+      
+                            if(fecha != null) {
+                              setState(() {
+                                _fechaCaducidadController.text = DateFormat('yyyy-MM-dd').format(fecha);
+                                var pivoteFechaMaxima = fecha.subtract(const Duration(hours: 24));
+                                _fechaMaxCaducidadController.text = DateFormat('yyyy-MM-dd').format(pivoteFechaMaxima);
+                              });
+                            }
+                          },
+                          
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const Expanded(child: SizedBox())
+                ],
+              ),
+            ),
+      
+            //FFECHA MAXIMA DE PUBLICACION
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:  BorderRadius.circular(30.0),
+                        color: Theme.of(context).backgroundColor,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          enabled: false,
+                          controller: _fechaMaxCaducidadController,
+                          style: const TextStyle(color: Colors.grey),
+                          decoration: const InputDecoration(
+                            border:  InputBorder.none,
+                            icon: Icon(Icons.calendar_month_rounded),
+                            labelText: "FECHA MAXIMA PUBLICACIÓN"
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+      
+                  const Expanded(child: SizedBox())
+                ],
+              ),
+            ),
+      
+            //STOCK DE LA PUBLICAION
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:  BorderRadius.circular(30.0),
+                        color: Theme.of(context).backgroundColor,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          controller: _stockController,
+                          decoration:  const InputDecoration(
+                            border:  InputBorder.none,
+                            hintText: "STOCK",
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: ((value){ 
+                            if(value!.isEmpty) return 'El stock no puede estar vacio';
+                          }),
+                        ),
+                      ),
+                    ),
+                  ),
+      
+                  const Expanded(child: SizedBox())
+                ],
+              ),
+            ),
+      
+            
+                
+            
+            if(_imagenSeleccionada != null) 
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 200.0,
+                  width: 100.0,
+                  child: Image.file(_imagenSeleccionada)
+                ),
+              ),
+      
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CircleAvatar(
+                    radius: 30.0,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: IconButton(
+                      onPressed: ()async{
+                        var camara = await ImagePicker.pickImage(source: ImageSource.camera);
+                        //final XFile? galeria = await _picker.pickImage(source: ImageSource.gallery);         AQUI EL DE LA GALERIA HACER UN FI
+                        setState(() {
+                          _imagenSeleccionada = camara as File ;
+                        });
+                      },
+                      icon: const Icon(Icons.camera_alt_rounded),
+                      color: Colors.white,
+                    ),
+                  ),
+      
+      
+                  CircleAvatar(
+                    radius: 30.0,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: IconButton(
+                      onPressed: ()async{
+                        //var camara = await ImagePicker.pickImage(source: ImageSource.camera);
+                        var galeria = await ImagePicker.pickImage(source: ImageSource.gallery);         
+                        setState(() {
+                          _imagenSeleccionada = galeria as File ;
+                        });
+                      },
+                      icon: const Icon(Icons.add_photo_alternate_rounded),
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+      
+            
+      
+      
+      
+            //BOTON PARA AGREGAR A LA BD
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 100.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).primaryColor)
+                ),
+                onPressed: (){
+                  if(_imagenSeleccionada == null) {
+                    showDialog(
+                      context: context, 
+                      builder: ((context) {
+                        return const AlertDialog(
+                          title: Text("¡Atención!"),
+                          content: Text("Es necesario que suba una foto del producto"),
+                        );
+                      })
+                    );
+                  }
+                  else{
+                    if(_formKey.currentState!.validate()){
+                      var fechaPublicacion = DateTime.now(); //Desde esta var puedo sumar o restar horas
+                      var imageId = const   Uuid().v1();
+                      FirestoreHelper.crearPublicacion(context,_imagenSeleccionada ,PublicacionModel(
+                        categoria : _categoriaController.text,
+                        descripcion : _descripcionController.text,
+                        id_user : widget.idUser,
+                        nombre : _nombreController.text,
+                        precio : int.parse(_precioController.text),
+                        idImagen: imageId,
+                        imagenPath: '',
+                        fechaPublicacion : fechaPublicacion,
+                        fechaCaducidad: DateTime.parse(_fechaCaducidadController.text),
+                        fechaMaximaPublicacion: DateTime.parse(_fechaMaxCaducidadController.text),
+                        stock: int.parse(_stockController.text),
+                      )); 
+                      setState(() {
+                        _categoriaController = TextEditingController();
+                        _nombreController = TextEditingController();
+                        _descripcionController = TextEditingController();
+                        _precioController = TextEditingController();
+                        _fechaCaducidadController = TextEditingController();
+                        _fechaMaxCaducidadController = TextEditingController();
+                      });        
+                    }   
+                  }    
+                },
+                child: Container(
+                  child: const Text("AGREGAR PUBLICACIÓN")
+                ), 
+              ),
             ),
             
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextFormField(
-                maxLines: 1,
-                keyboardType: TextInputType.text,
-                controller: _categoriaController,
-                decoration: const InputDecoration(
-                  border:  UnderlineInputBorder(),
-                  hintText: "Categoria",
-    
-                ),
-                onTap: () async {
-                  String elegido = await elegirCategoria();
-                },
-              ),
-            ),
-          ),
+            ],
         ),
-
-          //PRECIO   ---AQUI VALIDAR Q SEA SOLONUMERO
-          _inputPublicacion("PRECIO", _precioController, 1, _numeroType), 
-
-          //NOMBRE
-          _inputPublicacion("NOMBRE", _nombreController, 1, _textoType),
-
-          //DESCRPCION
-          _inputPublicacion("DESCRIPCION", _descripcionController, 10, _multiLineType),
-
-          //FECHA CADUDIDAD
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
-                      color: Theme.of(context).backgroundColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField (
-                        controller: _fechaCaducidadController,               
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.calendar_month_rounded),
-                          labelText: "FECHA DE CADUCIDAD"
-                        ),
-                        onTap: () async{
-                          DateTime? fecha = await showDatePicker(
-                            context: context, 
-                            initialDate: DateTime.now(), 
-                            firstDate: DateTime(2000), 
-                            lastDate: DateTime(2101),
-                            builder: (context, child) {
-                              return Theme(
-                                data: Theme.of(context).copyWith(
-                                  colorScheme: const ColorScheme.light(
-                                    primary:  Color.fromRGBO(255, 93, 162, 1),// <-- SEE HERE
-                                    onPrimary: Colors.white, // <-- SEE HERE
-                                    onSurface:  Colors.black, 
-                                  ),
-                                ),
-                                child: child!,
-                              ); 
-                            },
-                          );
-
-                          if(fecha != null) {
-                            setState(() {
-                              _fechaCaducidadController.text = DateFormat('yyyy-MM-dd').format(fecha);
-                              var pivoteFechaMaxima = fecha.subtract(const Duration(hours: 24));
-                              _fechaMaxCaducidadController.text = DateFormat('yyyy-MM-dd').format(pivoteFechaMaxima);
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                
-                const Expanded(child: SizedBox())
-              ],
-            ),
-          ),
-
-          //FFECHA MAXIMA DE PUBLICACION
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
-                      color: Theme.of(context).backgroundColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        enabled: false,
-                        controller: _fechaMaxCaducidadController,
-                        style: const TextStyle(color: Colors.grey),
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.calendar_month_rounded),
-                          labelText: "FECHA MAXIMA PUBLICACIÓN"
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const Expanded(child: SizedBox())
-              ],
-            ),
-          ),
-
-          //STOCK DE L A PUBLICAION
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
-                      color: Theme.of(context).backgroundColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        controller: _stockController,
-                        decoration:  const InputDecoration(
-                          border:  UnderlineInputBorder(),
-                          hintText: "STOCK",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const Expanded(child: SizedBox())
-              ],
-            ),
-          ),
-
-          
-              
-          
-          if(_imagenSeleccionada != null) 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: 200.0,
-                width: 100.0,
-                child: Image.file(_imagenSeleccionada)
-              ),
-            ),
-
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                CircleAvatar(
-                  radius: 30.0,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: IconButton(
-                    onPressed: ()async{
-                      var camara = await ImagePicker.pickImage(source: ImageSource.camera);
-                      //final XFile? galeria = await _picker.pickImage(source: ImageSource.gallery);         AQUI EL DE LA GALERIA HACER UN FI
-                      setState(() {
-                        _imagenSeleccionada = camara as File ;
-                      });
-                    },
-                    icon: const Icon(Icons.camera_alt_rounded),
-                    color: Colors.white,
-                  ),
-                ),
-
-
-                CircleAvatar(
-                  radius: 30.0,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: IconButton(
-                    onPressed: ()async{
-                      //var camara = await ImagePicker.pickImage(source: ImageSource.camera);
-                      var galeria = await ImagePicker.pickImage(source: ImageSource.gallery);         
-                      setState(() {
-                        _imagenSeleccionada = galeria as File ;
-                      });
-                    },
-                    icon: const Icon(Icons.add_photo_alternate_rounded),
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          
-
-
-
-          //BOTON PARA AGREGAR A LA BD
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 100.0),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).primaryColor)
-              ),
-              onPressed: (){
-                var fechaPublicacion = DateTime.now(); //Desde esta var puedo sumar o restar horas
-                //var fechaMaximaPublicacio =fechaPublicacion.add(const Duration(hours: 24));
-                var imageId = const   Uuid().v1();
-                FirestoreHelper.crearPublicacion(context,_imagenSeleccionada ,PublicacionModel(
-                  categoria : _categoriaController.text,
-                  descripcion : _descripcionController.text,
-                  id_user : widget.idUser,
-                  nombre : _nombreController.text,
-                  precio : int.parse(_precioController.text),
-                  idImagen: imageId,
-                  imagenPath: '',
-                  fechaPublicacion : fechaPublicacion,
-                  fechaCaducidad: DateTime.parse(_fechaCaducidadController.text),
-                  fechaMaximaPublicacion: DateTime.parse(_fechaMaxCaducidadController.text),
-                  stock: int.parse(_stockController.text),
-                )); 
-                setState(() {
-                  _categoriaController = TextEditingController();
-                  _nombreController = TextEditingController();
-                  _descripcionController = TextEditingController();
-                  _precioController = TextEditingController();
-                  _fechaCaducidadController = TextEditingController();
-                  _fechaMaxCaducidadController = TextEditingController();
-                });               
-              },
-              child: Container(
-                child: const Text("AGREGAR PUBLICACIÓN")
-              ), 
-            ),
-          ),
-          
-          ],
       ),
     );
   }
@@ -343,7 +380,7 @@ class _venderViewState extends State<venderView> {
       padding: const EdgeInsets.all(10.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+          borderRadius:  BorderRadius.circular(30.0),
           color: Theme.of(context).backgroundColor,
         ),
         
@@ -354,10 +391,14 @@ class _venderViewState extends State<venderView> {
             keyboardType: tipoTexto,
             controller: controlador,
             decoration:  InputDecoration(
-              border: const UnderlineInputBorder(),
+              border:  InputBorder.none,
               hintText: texto,
  
             ),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: ((value){ 
+              if(value!.isEmpty) return 'Este campo no puede estar vacio';
+            }),
           ),
         ),
       ),

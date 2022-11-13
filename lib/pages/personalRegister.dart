@@ -15,9 +15,9 @@ class personalRegisterPage extends StatefulWidget {
 
 class _personalRegisterPageState extends State<personalRegisterPage> {
 
-  TextEditingController _nombreController = TextEditingController();
-  TextEditingController _apellidoController = TextEditingController();
-  TextEditingController _telefonoController = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _apellidoController = TextEditingController();
+  final TextEditingController _telefonoController = TextEditingController();
 
 
   @override

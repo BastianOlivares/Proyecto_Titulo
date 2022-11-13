@@ -1,7 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:market_place/pages/menu.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
 import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 
@@ -31,7 +30,7 @@ class _menuViewState extends State<menuView> {
           Container(
             width: double.infinity,
             height: 250.0,
-            padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+            padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
             child: const publicidadMenu(),
           ),
 
@@ -75,7 +74,9 @@ class _menuViewState extends State<menuView> {
               height: 300.0,
               //width: 600.0,
               child: ListView.builder( 
-                itemCount: snapshot.data!.size == 0 ? 0 :limitePublicacionesVerticales,
+                itemCount: snapshot.data!.size < 3
+                ? snapshot.data!.size 
+                : limitePublicacionesVerticales,
                 scrollDirection:  Axis.horizontal,
                 itemBuilder: (BuildContext context,int index) {
                   if(index == limitePublicacionesVerticales - 1) {
@@ -121,13 +122,16 @@ class _menuViewState extends State<menuView> {
                             flex: 2,
                             child: Container(
                               width: double.infinity,
-                              color: Theme.of(context).primaryColor,
-                              child: Image.network(
-                                documentSnapshot['idImagen'],
-                                height: double.infinity,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
+                              decoration:  BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                image: DecorationImage(
+                                  image: NetworkImage(documentSnapshot['idImagen']),
+                                  fit: BoxFit.cover
+                                )
+                              ),  
+                              child: documentSnapshot['idImagen'].isEmpty == true
+                                  ? const Center(child: Icon(Icons.image_not_supported_rounded, size: 50.0, color: Colors.white,))
+                                  : null,                            
                             ),
                             
                           ),
@@ -192,11 +196,11 @@ class _menuViewState extends State<menuView> {
           );
         }
         else {
-          return Center(
-            child:  Container(
+          return const Center(
+            child:  SizedBox(
               width: 40.0,
               height: 40.0,
-              child: const CircularProgressIndicator(),
+              child:  CircularProgressIndicator(),
             ),
           );
         }

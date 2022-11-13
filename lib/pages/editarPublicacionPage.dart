@@ -14,11 +14,12 @@ class editarPublicacionPage extends StatefulWidget {
 
 class _editarPublicacionPageState extends State<editarPublicacionPage> {
   
-  TextEditingController _nombreController = TextEditingController();
-  TextEditingController _categoriaController = TextEditingController();
-  TextEditingController _descripcionController = TextEditingController();
-  TextEditingController _precioController = TextEditingController();
-  TextEditingController _fechaCaducidadController = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _categoriaController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController _precioController = TextEditingController();
+  final TextEditingController _fechaCaducidadController = TextEditingController();
+  final TextEditingController _fechaMaxPublicaionController = TextEditingController();
 
   
   
@@ -27,13 +28,19 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
     
     return refCategorias.get();
   }
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _nombreController.text = widget.publicacion['nombre'];
     _categoriaController.text = widget.publicacion['categoria'];
     _descripcionController.text = widget.publicacion['descripcion'];
     _precioController.text = widget.publicacion['precio'].toString();
     _fechaCaducidadController.text = DateFormat('dd-MM-yyyy').format(widget.publicacion['fechaCaducidad'].toDate());
+    _fechaMaxPublicaionController.text = DateFormat('dd-MM-yyyy').format(widget.publicacion['fechaMaximaPublicacion'].toDate());
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -95,7 +102,58 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                               children: [
 
                                 //FECHA DE CADUCIDAD
-                                Text("falta editar la fecha"),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).canvasColor,
+                                    borderRadius: BorderRadius.circular(10.0)
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: TextFormField(
+                                      maxLines: 1,
+                                      keyboardType: TextInputType.text,
+                                      controller: _fechaCaducidadController,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        labelText: "Fecha Caducidad: ",
+                                        labelStyle: TextStyle(
+                                          color: Colors.white
+                                        )
+                                      ),
+                                      style: const TextStyle(
+                                        color:  Colors.white,
+                                      ),
+                                      onTap: () async{
+                                        DateTime? fecha = await showDatePicker(
+                                          context: context, 
+                                          initialDate: DateTime.now(), 
+                                          firstDate: DateTime(2000), 
+                                          lastDate: DateTime(2101),
+                                          builder: (context, child) {
+                                            return Theme(
+                                              data: Theme.of(context).copyWith(
+                                                colorScheme: const ColorScheme.light(
+                                                  primary:  Color.fromRGBO(255, 93, 162, 1),// <-- SEE HERE
+                                                  onPrimary: Colors.white, // <-- SEE HERE
+                                                  onSurface:  Colors.black, 
+                                                ),
+                                              ),
+                                              child: child!,
+                                            ); 
+                                          },
+                                        );
+                  
+                                        if(fecha != null) {
+                                          setState(() {
+                                            _fechaCaducidadController.text = DateFormat('yyyy-MM-dd').format(fecha);
+                                            var pivoteFechaMaxima = fecha.subtract(const Duration(hours: 24));
+                                            _fechaMaxPublicaionController.text = DateFormat('yyyy-MM-dd').format(pivoteFechaMaxima);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(height: 20.0,),
 
                                 //NOMBRE DEL PRODUCTO
@@ -125,7 +183,7 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                                         color:  Colors.white,
                                       ),
                                       onTap: () async {
-                                        String elegido = await elegirCategoria();
+                                        await elegirCategoria();
                                       },
                                     ),
                                   ),
@@ -149,12 +207,14 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                                   ),
                                   onPressed: (){
                                     DateTime auxFechaCaducidad = DateTime.parse(_fechaCaducidadController.text);
+                                    DateTime auxFechaMaximaPub = DateTime.parse(_fechaMaxPublicaionController.text);
                                     FirestoreHelper.editarPublicacion(
                                       widget.publicacion, 
                                       _nombreController.text,
                                       _categoriaController.text, 
                                       _descripcionController.text,
                                       auxFechaCaducidad,
+                                      auxFechaMaximaPub,
                                       int.parse(_precioController.text), 
                                     );
                                     Navigator.pop(context);

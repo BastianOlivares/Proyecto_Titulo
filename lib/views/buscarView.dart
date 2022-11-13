@@ -1,8 +1,6 @@
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:market_place/widgets/showDialogPublicaci%C3%B3n.dart';
 class buscarView extends StatefulWidget {
@@ -13,7 +11,6 @@ class buscarView extends StatefulWidget {
 }
 
 class _buscarViewState extends State<buscarView> {
-  double _currentValue = 50000;
   List<String> listaFiltros = [];
 
   //ORDENADO POR FECHA DE CADUCIDAD
@@ -81,11 +78,10 @@ class _buscarViewState extends State<buscarView> {
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data.size,
                     itemBuilder: (context, index) {
-                      bool presionado = false;
                       final documentSnapshot = (snapshot.data as QuerySnapshot).docs[index];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
+                        child: SizedBox(
                           width: 100.0,
                           child: ElevatedButton(
                             onPressed: (){
@@ -106,8 +102,7 @@ class _buscarViewState extends State<buscarView> {
                                 );
                               }
                               
-                            }, 
-                            child: Text(documentSnapshot['nombre'].toUpperCase()),
+                            },
                             style: ButtonStyle(
                               shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(
@@ -115,7 +110,8 @@ class _buscarViewState extends State<buscarView> {
                                 ),
                               ),
                               backgroundColor: (include(listaFiltros, documentSnapshot['nombre'])) ? MaterialStatePropertyAll<Color>(Theme.of(context).canvasColor) : MaterialStatePropertyAll<Color>(Theme.of(context).primaryColor),
-                            ),
+                            ), 
+                            child: Text(documentSnapshot['nombre'].toUpperCase()),
                           ),
                         ),
                       );
@@ -190,12 +186,13 @@ class _buscarViewState extends State<buscarView> {
                                     topLeft: Radius.circular(20.0),
                                   ),
                                   image: DecorationImage(
-                                    image: NetworkImage(
-                                      documentSnapshot['idImagen'],
-                                    ),
+                                    image: NetworkImage(documentSnapshot['idImagen'],),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
+                                child: documentSnapshot['idImagen'].isEmpty == true
+                                  ? const Center(child: Icon(Icons.image_not_supported_rounded, size: 50.0, color: Colors.white,))
+                                  : null,
                               ),
                             ),
 

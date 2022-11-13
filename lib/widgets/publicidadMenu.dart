@@ -30,7 +30,9 @@ class _publicidadMenuState extends State<publicidadMenu> {
           return Swiper(
             viewportFraction: 0.8,
             scale: 0.9,
-            itemCount: snapshot.data.size == 0 ? 0 :3, ///EL SWIPER SE ENCARGA DE  SOLO MOSTRAR LOS PRIMEROS 3 ELEMNTOS DE TODAS LAS PUBLICAIONES
+            itemCount: snapshot.data.size <= 3
+              ? snapshot.data.size
+              : 3, ///EL SWIPER SE ENCARGA DE  SOLO MOSTRAR LOS PRIMEROS 3 ELEMNTOS DE TODAS LAS PUBLICAIONES
             pagination: const SwiperPagination(),
             control: const SwiperControl(),
             itemBuilder: (BuildContext context,int index){
@@ -52,13 +54,16 @@ class _publicidadMenuState extends State<publicidadMenu> {
                           flex: 2,
                           child: Container(
                             width: double.infinity,
-                            color: Theme.of(context).primaryColor,
-                            child: Image.network(
-                              documentSnapshot['idImagen'],
-                              height: double.infinity,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            decoration:  BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              image: DecorationImage(
+                                image: NetworkImage(documentSnapshot['idImagen']),
+                                fit: BoxFit.cover
+                              )
+                            ),  
+                            child: documentSnapshot['idImagen'].isEmpty == true
+                                ? const Center(child: Icon(Icons.image_not_supported_rounded, size: 50.0, color: Colors.white,))
+                                : null, 
                           ),
                           
                         ),
