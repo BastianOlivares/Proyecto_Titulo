@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:market_place/pages/editarPublicacionPage.dart';
-import 'package:market_place/remote_data_sources/firestoreHelper.dart';
 import 'package:market_place/widgets/alertDialogConfirmarElimnarPublicacion.dart';
 import 'package:market_place/widgets/alertDialogReservarProducto.dart';
 import 'package:market_place/widgets/showDialogEditarImagen.dart';
@@ -57,23 +56,21 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
                         color: Theme.of(context).primaryColor,
                       ),
                       child: editar == true
-                        ? Container(
-                          child: FloatingActionButton.extended(
-                              elevation: 50.0,
-                              backgroundColor: Color.fromARGB(134, 255, 255, 255),
-                              onPressed: (){
-                                showDialogEditarImagen(context, publicacion);
-                              },
-                              label: const Text(
-                                'EDITAR IMAGEN ',
-                                style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold)
-                              ),
-                              icon: const Icon(
-                                Icons.edit_note_rounded,
-                                color: Colors.black,
-                              ),
+                        ? FloatingActionButton.extended(
+                            elevation: 50.0,
+                            backgroundColor: const  Color.fromARGB(134, 255, 255, 255),
+                            onPressed: (){
+                              showDialogEditarImagen(context, publicacion);
+                            },
+                            label: const Text(
+                              'EDITAR IMAGEN ',
+                              style: TextStyle(color: Colors.black , fontWeight: FontWeight.bold)
                             ),
-                        )
+                            icon: const Icon(
+                              Icons.edit_note_rounded,
+                              color: Colors.black,
+                            ),
+                          )
                         : null
                     ),
                   ),

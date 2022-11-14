@@ -59,6 +59,7 @@ class _perfilPageState extends State<perfilPage> {
           backgroundColor: Theme.of(context).primaryColor,
           title: const Text("PERFIL"),
           actions: <Widget>[
+
             IconButton(
               icon: const Icon(Icons.messenger_outline_rounded),
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => reservasPage(widget.uid),)),

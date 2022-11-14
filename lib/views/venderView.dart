@@ -1,13 +1,10 @@
 
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
-import 'package:market_place/widgets/navitaroBar.dart';
 
 import '../model/publicacionesModel.dart';
 import 'package:uuid/uuid.dart';
@@ -48,14 +45,10 @@ class _venderViewState extends State<venderView> {
   //VARIABLES DE IMAGENES
   var _imagenSeleccionada;
 
-  //VARIABLES CATEGORIA
-  String _categoria = "seleccione su categoria";
-
   
 
   @override
   Widget build(BuildContext context) {
-    print(widget.idUser);
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
@@ -109,11 +102,12 @@ class _venderViewState extends State<venderView> {
           
                   ),
                   onTap: () async {
-                    String elegido = await elegirCategoria();
+                    await elegirCategoria();
                   },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: ((value){ 
                     if(value!.isEmpty) return 'La categoría no puede esatr vacia.';
+                    return null;
                   }),
                 ),
               ),
@@ -152,6 +146,7 @@ class _venderViewState extends State<venderView> {
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: ((value){ 
                             if(value!.isEmpty) return 'La fecha no puede estar vacia';
+                            return null;
                           }),
                           onTap: () async{
                             DateTime? fecha = await showDatePicker(
@@ -247,6 +242,7 @@ class _venderViewState extends State<venderView> {
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: ((value){ 
                             if(value!.isEmpty) return 'El stock no puede estar vacio';
+                            return null;
                           }),
                         ),
                       ),
@@ -284,7 +280,7 @@ class _venderViewState extends State<venderView> {
                         var camara = await ImagePicker.pickImage(source: ImageSource.camera);
                         //final XFile? galeria = await _picker.pickImage(source: ImageSource.gallery);         AQUI EL DE LA GALERIA HACER UN FI
                         setState(() {
-                          _imagenSeleccionada = camara as File ;
+                          _imagenSeleccionada = camara ;
                         });
                       },
                       icon: const Icon(Icons.camera_alt_rounded),
@@ -301,7 +297,7 @@ class _venderViewState extends State<venderView> {
                         //var camara = await ImagePicker.pickImage(source: ImageSource.camera);
                         var galeria = await ImagePicker.pickImage(source: ImageSource.gallery);         
                         setState(() {
-                          _imagenSeleccionada = galeria as File ;
+                          _imagenSeleccionada = galeria ;
                         });
                       },
                       icon: const Icon(Icons.add_photo_alternate_rounded),
@@ -363,9 +359,7 @@ class _venderViewState extends State<venderView> {
                     }   
                   }    
                 },
-                child: Container(
-                  child: const Text("AGREGAR PUBLICACIÓN")
-                ), 
+                child: const Text("AGREGAR PUBLICACIÓN"), 
               ),
             ),
             
@@ -398,6 +392,7 @@ class _venderViewState extends State<venderView> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: ((value){ 
               if(value!.isEmpty) return 'Este campo no puede estar vacio';
+              return null;
             }),
           ),
         ),

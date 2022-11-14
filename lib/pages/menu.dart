@@ -8,8 +8,6 @@ import 'package:market_place/pages/personalRegister.dart';
 import 'package:market_place/views/buscarView.dart';
 import 'package:market_place/views/menuView.dart';
 import 'package:market_place/views/venderView.dart';
-import 'package:market_place/widgets/appBar.dart';
-import 'package:market_place/widgets/navitaroBar.dart';
 import 'package:market_place/widgets/publicidadMenu.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -44,15 +42,19 @@ class _menuState extends State<menu> {
     return Scaffold(
       //APPBAR
       appBar: AppBar(
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.logout_rounded),
+              onPressed: ()=> FirebaseAuth.instance.signOut(),
+            );
+          },
+        ),
       /////////////////////////////////////////////// INTENTAR MODULAR EN appBar
         backgroundColor: Theme.of(context).primaryColor,
         //automaticallyImplyLeading: false,
-        title: Text(uid),//Text("ExFood"),
+        title: const Center(child: Text(/*uid*/ 'ExFoof')),//Text("ExFood"),
         actions: <Widget> [
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: ()=> FirebaseAuth.instance.signOut(),
-          ),
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: ()=>{

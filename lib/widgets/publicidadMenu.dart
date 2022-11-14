@@ -99,8 +99,7 @@ class _publicidadMenuState extends State<publicidadMenu> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton(
-                                          onPressed: () => showDialogPublicacion(context, documentSnapshot, false), 
-                                          child: const Text("Ver"),
+                                          onPressed: () => showDialogPublicacion(context, documentSnapshot, false),
                                           style: ButtonStyle(
                                           shape: MaterialStateProperty.all(
                                             RoundedRectangleBorder(
@@ -108,7 +107,8 @@ class _publicidadMenuState extends State<publicidadMenu> {
                                             ),
                                           ),
                                           backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).cardColor),
-                                        ),
+                                        ), 
+                                          child: const Text("Ver"),
                                         ),
                                       ),
                                     ],
@@ -130,8 +130,8 @@ class _publicidadMenuState extends State<publicidadMenu> {
             },
           );
         }else {
-          return Center(
-            child: Container(
+          return const Center(
+            child: SizedBox(
               width: 40.0,
               height: 40.0,
               child: CircularProgressIndicator(),
