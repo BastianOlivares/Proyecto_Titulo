@@ -25,12 +25,19 @@ class _editarPersonalPageState extends State<editarPersonalPage> {
     final TextEditingController _numeroTelefonicoController = TextEditingController();
 
     final _formKey = GlobalKey<FormState>();
+
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _nombreController.text = widget.nombre;
     _apellidoController.text = widget.apellido;
     _numeroTelefonicoController.text = widget.numeroTelefonico.toString();
 
+    super.initState();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

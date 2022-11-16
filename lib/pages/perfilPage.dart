@@ -195,7 +195,7 @@ class _perfilPageState extends State<perfilPage> {
                                               onPressed: () {
                                                 Navigator.push(
                                                   context, 
-                                                  MaterialPageRoute(builder: ((context) => editarPersonalPage(widget.uid, snapshot.data.data()['nombre'], snapshot.data.data()['apellido'], snapshot.data.data()['numeroTelefonico'])))
+                                                  MaterialPageRoute(builder: ((context) => editarPersonalPage(widget.uid, snapshot.data.data()['nombre'], snapshot.data.data()['apellido'], (snapshot.data.data()['numeroTelefonico']))))
                                                 );
                                               },
                                               label: const Text(

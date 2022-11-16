@@ -68,7 +68,7 @@ class _registerPageState extends State<registerPage> {
                           children: [
                             const Center(
                               child: Text(
-                                "REGISTRO DE SESION",
+                                "REGISTRO DE SESIÓN",
                                 style: TextStyle(color: Color.fromRGBO(71, 208, 189, 1) ,fontSize: 30, fontWeight: FontWeight.bold)
                               ),
                             ),
@@ -89,6 +89,7 @@ class _registerPageState extends State<registerPage> {
                               decoration: const InputDecoration(
                                 border:  UnderlineInputBorder(),
                                 hintText: "CORREO",
+                                errorStyle: TextStyle(color: Colors.white)
                               ),
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               validator: (email) =>
@@ -113,7 +114,8 @@ class _registerPageState extends State<registerPage> {
                               ),
                               decoration: const InputDecoration(
                                 border:  UnderlineInputBorder(),
-                                hintText: "CONTRASEÑA"
+                                hintText: "CONTRASEÑA",
+                                errorStyle: TextStyle(color: Colors.white)
                               ),
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               validator: ((value) => 
@@ -131,7 +133,7 @@ class _registerPageState extends State<registerPage> {
                               ),
                               onPressed: sigUp,
                               child: const Text(
-                                "Restrarse", 
+                                "Registrarse", 
                                 style: TextStyle(fontSize: 20), 
                                 
                               )

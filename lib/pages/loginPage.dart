@@ -26,6 +26,7 @@ class _loginPageState extends State<loginPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'ExFood',
       home: Scaffold(
         body: Container(
@@ -74,7 +75,7 @@ class _loginPageState extends State<loginPage> {
                           
                           const Center(
                             child: Text(
-                              "INCIO DE SESION",
+                              "INCIO DE SESIÓN",
                               style: TextStyle(color: Color.fromRGBO(71, 208, 189, 1) ,fontSize: 30, fontWeight: FontWeight.bold)
                             ),
                           ),
@@ -150,7 +151,7 @@ class _loginPageState extends State<loginPage> {
                                 style: TextButton.styleFrom(
                                   foregroundColor: Theme.of(context).focusColor,
                                 ), 
-                                child: const Text("¡REGISTRATE AQUI!")
+                                child: const Text("¡REGISTRATE AQUÍ!")
                               )
                             ],
                           ),

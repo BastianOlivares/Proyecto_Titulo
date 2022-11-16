@@ -7,6 +7,7 @@ void alertDialogReservarPorducto(BuildContext context, QueryDocumentSnapshot<Obj
   TextEditingController _stockController = TextEditingController();
   User auth = FirebaseAuth.instance.currentUser!;
   late String uid;
+  final _formKey = GlobalKey<FormState>();
 
   void inputUidUser() {
     uid = (auth.uid).toString();
@@ -18,17 +19,18 @@ void alertDialogReservarPorducto(BuildContext context, QueryDocumentSnapshot<Obj
     builder: (context) {
       inputUidUser();
       return Form(
+        key: _formKey,
         child: AlertDialog(
-          title: const Text("Cauntos productos desea reservar"),
+          title: const Text("Cuantos productos desea reservar"),
           content: TextFormField(
             keyboardType: TextInputType.number,
             controller: _stockController,
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: ((value) => 
-              value != null && int.parse(value) > publicacion['stock']
-              ? 'Ingresar un numero menos al stock '
-              : null
-            ),
+            validator: ((value) {
+              if(value!.isEmpty ) return 'El campo no puede estar vacio';
+              if(int.parse(value) > publicacion['stock']) return 'Ingresar un numero menor o igual al stock ';
+              return null;
+            }),
           ),
           actions: [
             TextButton(
@@ -38,19 +40,21 @@ void alertDialogReservarPorducto(BuildContext context, QueryDocumentSnapshot<Obj
       
             TextButton(
               onPressed: () {
-                FirestoreHelper.crearReservaProducto(
-                  publicacion,
-                  uid, 
-                  int.parse(_stockController.text), 
-                  publicacion.id, 
-                  publicacion['id_user']
-                );
-                Navigator.pop(context); //SALE DE LA ALERTA
-                Navigator.pop(context); //SALE DE LA PUBLICACION
-                showDialog(
-                  context: context, 
-                  builder: ((context) => const AlertDialog(title:  Text("¡EL PRODUCTO SE RESERVO EXITOSAMENTE!"),))
-                );
+                if(_formKey.currentState!.validate()) {
+                  FirestoreHelper.crearReservaProducto(
+                    publicacion,
+                    uid, 
+                    int.parse(_stockController.text), 
+                    publicacion.id, 
+                    publicacion['id_user']
+                  );
+                  Navigator.pop(context); //SALE DE LA ALERTA
+                  Navigator.pop(context); //SALE DE LA PUBLICACION
+                  showDialog(
+                    context: context, 
+                    builder: ((context) => const AlertDialog(title:  Text("¡EL PRODUCTO SE RESERVO EXITOSAMENTE!"),))
+                  );
+                }
               }, 
               child:const Text("Reservar")
             )

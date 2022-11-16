@@ -19,6 +19,7 @@ class _personalRegisterPageState extends State<personalRegisterPage> {
   final TextEditingController _apellidoController = TextEditingController();
   final TextEditingController _telefonoController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -72,120 +73,139 @@ class _personalRegisterPageState extends State<personalRegisterPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Form(
-                        child: ListView(
-                          children: [
-
-                            //NOMBRE
-                            const Text(
-                              "Nombre",
-                              style: TextStyle(color: Colors.white ,fontSize: 30, fontWeight: FontWeight.bold),
-                            ),
-                            TextFormField(
-                              controller: _nombreController,
-                              style: const TextStyle(
-                                color:  Colors.white,
+                        child: Form(
+                          key: _formKey,
+                          child: ListView(
+                            children: [
+                        
+                              //NOMBRE
+                              const Text(
+                                "Nombre",
+                                style: TextStyle(color: Colors.white ,fontSize: 30, fontWeight: FontWeight.bold),
                               ),
-                              decoration: const InputDecoration(
-                                border:  UnderlineInputBorder(),
-                                hintText: "Nombre",
-                              ),
-                            ),
-
-                            const SizedBox(height: 50.0,),
-
-                            //APELLIDO
-                            const Text(
-                              "Apellido",
-                              style: TextStyle(color: Colors.white ,fontSize: 30, fontWeight: FontWeight.bold),
-                            ),
-                            TextFormField(
-                              controller: _apellidoController,
-                              style: const TextStyle(
-                                color:  Colors.white,
-                              ),
-                              decoration: const InputDecoration(
-                                border:  UnderlineInputBorder(),
-                                hintText: "Apellido",
-                              ),
-                            ),
-
-                            const SizedBox(height: 50.0,),
-
-
-                            //NUMERO TELEFONICO
-                            const Text(
-                              "Número Telefónico",
-                              style: TextStyle(color: Colors.white ,fontSize: 30, fontWeight: FontWeight.bold),
-                            ),
-                            Row(
-                              children: [
-
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                                  child: Icon(
-                                    Icons.phone_callback_rounded,
-                                    color: Colors.white,
-                                  ),
+                              TextFormField(
+                                controller: _nombreController,
+                                style: const TextStyle(
+                                  color:  Colors.white,
                                 ),
-
-                                const Padding(
-                                  padding:  EdgeInsets.only(right: 10.0),
-                                  child: Text(
-                                    "+569",
-                                    style: TextStyle(
-                                      color: Colors.white
-                                    ),
-                                  ),
+                                decoration: const InputDecoration(
+                                  border:  UnderlineInputBorder(),
+                                  hintText: "Nombre",
+                                  errorStyle: TextStyle(color: Colors.white)
                                 ),
-
-                                Expanded(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    controller: _telefonoController,
-                                    style: const TextStyle(
-                                      color:  Colors.white,
-                                    ),
-                                    decoration: const InputDecoration(
-                                      border:  UnderlineInputBorder(),
-                                      hintText: "12345678",
-                                    ),
-                                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                                    validator: ((value) => 
-                                      value != null && value.length != 8
-                                      ? 'Ingresar número de teléfono valido '
-                                      : null
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: ((value){ 
+                                  if(value!.isEmpty) return 'El nombre no puede estar vacio';
+                                  return null;
+                                }),
+                              ),
+                        
+                              const SizedBox(height: 50.0,),
+                        
+                              //APELLIDO
+                              const Text(
+                                "Apellido",
+                                style: TextStyle(color: Colors.white ,fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
+                              TextFormField(
+                                controller: _apellidoController,
+                                style: const TextStyle(
+                                  color:  Colors.white,
+                                ),
+                                decoration: const InputDecoration(
+                                  border:  UnderlineInputBorder(),
+                                  hintText: "Apellido",
+                                  errorStyle: TextStyle(color: Colors.white)
+                                ),
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: ((value){ 
+                                  if(value!.isEmpty) return 'El apellido no puede estar vacio';
+                                  return null;
+                                }),
+                              ),
+                        
+                              const SizedBox(height: 50.0,),
+                        
+                        
+                              //NUMERO TELEFONICO
+                              const Text(
+                                "Número Telefónico",
+                                style: TextStyle(color: Colors.white ,fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
+                              Row(
+                                children: [
+                        
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                    child: Icon(
+                                      Icons.phone_callback_rounded,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 50.0,),
-
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).focusColor)
+                        
+                                  const Padding(
+                                    padding:  EdgeInsets.only(right: 10.0),
+                                    child: Text(
+                                      "+569",
+                                      style: TextStyle(
+                                        color: Colors.white
+                                      ),
+                                    ),
+                                  ),
+                        
+                                  Expanded(
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.number,
+                                      controller: _telefonoController,
+                                      style: const TextStyle(
+                                        color:  Colors.white,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        border:  UnderlineInputBorder(),
+                                        hintText: "12345678",
+                                        errorStyle: TextStyle(color: Colors.white)
+                                      ),
+                                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                                      validator: ((value) {
+                                        if(value!.isEmpty) return 'Ingrese un número valido';
+                                          if(value.length < 8) return 'Ingrese al menos 8 digitos';
+                                          if(value.length > 8) return 'Ingrese al lo mas 8 digitos';
+                                          return null;
+                                      }
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              onPressed: (){ 
-
-                                FirestoreHelper.crearUsuario(context, widget.uid, UsuarioModel(
-                                  nombre: _nombreController.text, 
-                                  apellido: _apellidoController.text, 
-                                  numeroTelefonico: _telefonoController.text,
-                                  tipoUsuario: 'cliente',
-                                  localAsociado: ''
-                                ));
-                                Navigator.pop(context);
-                                setState(() {});
-                              },
-                              child: const Text(
-                                "Registrarse", 
-                                style: TextStyle(fontSize: 20), 
-                                
-                              )
-                            ),
-
-                          ],
+                        
+                              const SizedBox(height: 50.0,),
+                        
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll<Color> (Theme.of(context).focusColor)
+                                ),
+                                onPressed: (){ 
+                                  if(_formKey.currentState!.validate()) {
+                                    FirestoreHelper.crearUsuario(context, widget.uid, UsuarioModel(
+                                      nombre: _nombreController.text, 
+                                      apellido: _apellidoController.text, 
+                                      numeroTelefonico: int.parse(_telefonoController.text),
+                                      tipoUsuario: 'cliente',
+                                      localAsociado: ''
+                                    ));
+                                    Navigator.pop(context);
+                                    setState(() {});
+                                  }
+                                },
+                                child: const Text(
+                                  "Registrarse", 
+                                  style: TextStyle(fontSize: 20), 
+                                  
+                                )
+                              ),
+                        
+                            ],
+                          ),
                         ),
                       ),
                     ),

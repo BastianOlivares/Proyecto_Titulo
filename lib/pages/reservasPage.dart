@@ -137,6 +137,7 @@ class _reservasPageState extends State<reservasPage> {
                                                   child: Column(
                                                     children: [
                                                       Expanded(
+                                                        flex: 2,
                                                         child: StreamBuilder(
                                                           stream: getComprador(documentSnapshot['idComprador']),
                                                           builder: (context, AsyncSnapshot usuario) {
@@ -147,16 +148,24 @@ class _reservasPageState extends State<reservasPage> {
                                                               children: [
                                                                 Padding(
                                                                   padding: const EdgeInsets.all(10.0),
-                                                                  child: Row(
+                                                                  child: Column(
                                                                     children: [
-                                                                      Text(
-                                                                        "${usuario.data.data()['nombre']} ",
-                                                                        style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            "${usuario.data.data()['nombre']} ",
+                                                                            style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                                          ),
+                                                                          Text(
+                                                                            usuario.data.data()['apellido'],
+                                                                            style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                       Text(
-                                                                        usuario.data.data()['apellido'],
+                                                                        "+569 ${usuario.data.data()['numeroTelefonico']}",
                                                                         style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                                                      ),
+                                                                      )
                                                                     ],
                                                                   ),
                                                                 ),

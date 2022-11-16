@@ -35,8 +35,8 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
     _categoriaController.text = widget.publicacion['categoria'];
     _descripcionController.text = widget.publicacion['descripcion'];
     _precioController.text = widget.publicacion['precio'].toString();
-    _fechaCaducidadController.text = DateFormat('dd-MM-yyyy').format(widget.publicacion['fechaCaducidad'].toDate());
-    _fechaMaxPublicaionController.text = DateFormat('dd-MM-yyyy').format(widget.publicacion['fechaMaximaPublicacion'].toDate());
+    _fechaCaducidadController.text = DateFormat('yyyy-MM-dd').format(widget.publicacion['fechaCaducidad'].toDate());
+    _fechaMaxPublicaionController.text = DateFormat('yyyy-MM-dd').format(widget.publicacion['fechaMaximaPublicacion'].toDate());
     super.initState();
   }
   @override

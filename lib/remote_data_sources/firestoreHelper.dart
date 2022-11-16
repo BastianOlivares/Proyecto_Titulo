@@ -126,7 +126,7 @@ class FirestoreHelper {
                   padding: EdgeInsets.all(10.0),
                   child:  Center(
                     child: Text(
-                      "Los datos han sido Publicaods exitosamente!",
+                      "Los datos han sido Publicados exitosamente!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 30.0
@@ -250,13 +250,11 @@ class FirestoreHelper {
   //EDITAR DATOS DEL USUARIO
   static Future<void> editarDatosPersonales(
       String idUSer,
-      //QueryDocumentSnapshot<Object?> usuario,
       String nombre,
       String apellido,
-      int telefono) async {
-    final docReff =
-        FirebaseFirestore.instance.collection('usuarios').doc(idUSer);
-
+      int telefono
+      )async {
+    final docReff = FirebaseFirestore.instance.collection('usuarios').doc(idUSer);
     await docReff.update({
       'nombre': nombre,
       'apellido': apellido,

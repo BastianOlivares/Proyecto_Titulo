@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UsuarioModel {
   final String nombre;
   final String apellido;
-  final String numeroTelefonico;
+  final int numeroTelefonico;
   final String tipoUsuario;
   final String localAsociado;
 
@@ -32,7 +32,7 @@ class UsuarioModel {
     :this (
       nombre: json['nombre'] as String, 
       apellido: json['apellido'] as String, 
-      numeroTelefonico: json['numeroTelefonico'] as String, 
+      numeroTelefonico: json['numeroTelefonico'] as int, 
       tipoUsuario: json['tipoUsuario'] as String,  
       localAsociado: json['localAsociado'] as String, 
     );
