@@ -40,13 +40,15 @@ void alertDialogReservarPorducto(BuildContext context, QueryDocumentSnapshot<Obj
       
             TextButton(
               onPressed: () {
+                var fechaReserva = DateTime.now();
                 if(_formKey.currentState!.validate()) {
                   FirestoreHelper.crearReservaProducto(
                     publicacion,
                     uid, 
                     int.parse(_stockController.text), 
                     publicacion.id, 
-                    publicacion['id_user']
+                    publicacion['id_user'],
+                    fechaReserva
                   );
                   Navigator.pop(context); //SALE DE LA ALERTA
                   Navigator.pop(context); //SALE DE LA PUBLICACION

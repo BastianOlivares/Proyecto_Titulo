@@ -5,6 +5,7 @@ import 'package:market_place/pages/editarPublicacionPage.dart';
 import 'package:market_place/widgets/alertDialogConfirmarElimnarPublicacion.dart';
 import 'package:market_place/widgets/alertDialogReservarProducto.dart';
 import 'package:market_place/widgets/showDialogEditarImagen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 /*El editar es para entregar un boton donde se permita editar y borrar la publicacion q se quiere mostra
@@ -217,6 +218,30 @@ void showDialogPublicacion (BuildContext context, QueryDocumentSnapshot<Object?>
                             seccionInformacion("Apellido",proveedor['apellido'] ),
                             //NUMERO DEL PROVEEDOR
                             seccionInformacion("Telefono", proveedor['numeroTelefonico'].toString()),
+
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: FloatingActionButton.extended(
+                                elevation: 50.0,
+                                
+                                backgroundColor: Theme.of(context).primaryColor,
+                                onPressed: () async {
+                                  final Uri llamarLaunchUri = Uri(
+                                    scheme: 'tel',
+                                    path: "+569${proveedor['numeroTelefonico']}"
+                                  );
+
+                                  if(await canLaunchUrl(llamarLaunchUri)) {
+                                    await launchUrl(llamarLaunchUri);
+                                  }
+                                },
+                                label: const Text(
+                                  'Llamar ',
+                                  style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold)
+                                ),
+                                icon: const Icon(Icons.call),
+                              ),
+                            ),
 
 
                             Container(

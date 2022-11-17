@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:market_place/remote_data_sources/firestoreHelper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class reservasPage extends StatefulWidget {
   final String uid;
@@ -95,10 +97,11 @@ class _reservasPageState extends State<reservasPage> {
                                   itemCount: snapshot.data.size,
                                   itemBuilder: (context, index) {
                                     final documentSnapshot = (snapshot.data as QuerySnapshot).docs[index];
+                                    final fechaReserva = DateFormat('yyyy-MM-dd').format(documentSnapshot['fechaReserva'].toDate());
                                     return Padding(
                                       padding: const EdgeInsets.all(10.0),
                                       child: Container(
-                                        height: 200.0,
+                                        height: 300.0,
                                         width: double.infinity,
                                         decoration: BoxDecoration (
                                           borderRadius: const BorderRadius.all(Radius.circular(30.0)),
@@ -137,7 +140,7 @@ class _reservasPageState extends State<reservasPage> {
                                                   child: Column(
                                                     children: [
                                                       Expanded(
-                                                        flex: 2,
+                                                        flex: 3,
                                                         child: StreamBuilder(
                                                           stream: getComprador(documentSnapshot['idComprador']),
                                                           builder: (context, AsyncSnapshot usuario) {
@@ -150,22 +153,64 @@ class _reservasPageState extends State<reservasPage> {
                                                                   padding: const EdgeInsets.all(10.0),
                                                                   child: Column(
                                                                     children: [
-                                                                      Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            "${usuario.data.data()['nombre']} ",
-                                                                            style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                                      Expanded(
+                                                                        child: Center(
+                                                                          child: Row(
+                                                                            children: [
+                                                                              Text(
+                                                                                "${usuario.data.data()['nombre']} ",
+                                                                                style: const  TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                                                                              ),
+                                                                              Text(
+                                                                                usuario.data.data()['apellido'],
+                                                                                style: const  TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                                                                              ),
+                                                                            ],
                                                                           ),
-                                                                          Text(
-                                                                            usuario.data.data()['apellido'],
-                                                                            style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                                                          ),
-                                                                        ],
+                                                                        ),
                                                                       ),
-                                                                      Text(
-                                                                        "+569 ${usuario.data.data()['numeroTelefonico']}",
-                                                                        style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                                                      )
+                                                                      Expanded(
+                                                                        child: Center(
+                                                                          child: Row(
+                                                                            children: [
+                                                                              CircleAvatar(
+                                                                                radius: 30,
+                                                                                backgroundColor: Theme.of(context).primaryColor,
+                                                                                child: IconButton(
+                                                                                  onPressed: () async {
+                                                                                    final Uri llamarLaunchUri = Uri(
+                                                                                      scheme: 'tel',
+                                                                                      path: "+569${usuario.data.data()['numeroTelefonico']}"
+                                                                                    );
+
+                                                                                    if(await canLaunchUrl(llamarLaunchUri)) {
+                                                                                      await launchUrl(llamarLaunchUri);
+                                                                                    }
+                                                                                  }, 
+                                                                                  iconSize: 30 ,
+                                                                                  icon: Icon(Icons.call_outlined),
+                                                                                  color: Colors.white,
+                                                                                ),
+                                                                              ),
+
+                                                                              Text(
+                                                                                "+569 ${usuario.data.data()['numeroTelefonico']}",
+                                                                                style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ),
+
+                                                                      Expanded(
+                                                                        child: Center(
+                                                                          child: Text(
+                                                                            "Reservado: $fechaReserva",
+                                                                            style: const  TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+
                                                                     ],
                                                                   ),
                                                                 ),
@@ -181,7 +226,7 @@ class _reservasPageState extends State<reservasPage> {
                                                           child: Row(
                                                             children: [
                                                               const Text(
-                                                                'ha reservado :',
+                                                                'Ha reservado :',
                                                                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                                                               ),
 

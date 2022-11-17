@@ -145,14 +145,15 @@ class FirestoreHelper {
   }
 
   //AGREGAR UNA RESERVA DE UN PRODUCTO
-  static crearReservaProducto(QueryDocumentSnapshot<Object?> publicacion, String idComprador, int cantidad, String idPublicacion, String idVendedor) async {
+  static crearReservaProducto(QueryDocumentSnapshot<Object?> publicacion, String idComprador, int cantidad, String idPublicacion, String idVendedor, DateTime fechaReserva) async {
     final coleccionSolicitudes = FirebaseFirestore.instance.collection('solicitudReservaProducto'); //nombre de la coleccion de la BD
     final docRef = coleccionSolicitudes.doc();
     final nuevaSolicitud = ReservarProductoModel(
       idComprador: idComprador, 
       cantidad: cantidad, 
       idPublicacion: idPublicacion, 
-      idVendedor: idVendedor
+      idVendedor: idVendedor,
+      fechaReserva: fechaReserva
     ).toJson();
     try {
       await docRef.set(nuevaSolicitud);
