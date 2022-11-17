@@ -20,7 +20,7 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _fechaCaducidadController = TextEditingController();
   final TextEditingController _fechaMaxPublicaionController = TextEditingController();
-
+final TextEditingController _stockController = TextEditingController();
   
   
   Future<QuerySnapshot> getCategorias() async {
@@ -37,6 +37,7 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
     _precioController.text = widget.publicacion['precio'].toString();
     _fechaCaducidadController.text = DateFormat('yyyy-MM-dd').format(widget.publicacion['fechaCaducidad'].toDate());
     _fechaMaxPublicaionController.text = DateFormat('yyyy-MM-dd').format(widget.publicacion['fechaMaximaPublicacion'].toDate());
+    _stockController.text = widget.publicacion['stock'].toString();
     super.initState();
   }
   @override
@@ -198,6 +199,10 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                                 inputEditar(_precioController, "PRECIO : ", TextInputType.number, 1),
                                 const SizedBox(height: 20.0,),
 
+                                //STOCK
+                                inputEditar(_stockController, "STOCK : ", TextInputType.number, 1),
+                                const SizedBox(height: 20.0,),
+
                                 
 
                                 //BOTON EDITAR
@@ -216,6 +221,7 @@ class _editarPublicacionPageState extends State<editarPublicacionPage> {
                                       auxFechaCaducidad,
                                       auxFechaMaximaPub,
                                       int.parse(_precioController.text), 
+                                      int.parse(_stockController.text)
                                     );
                                     Navigator.pop(context);
                                     

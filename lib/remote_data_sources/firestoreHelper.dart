@@ -273,7 +273,8 @@ class FirestoreHelper {
   String descripcion,
   DateTime fechaCaducidad,
   DateTime fechaMaximaPublicacion,
-  int precio
+  int precio,
+  int stock
   ) async {
     final docRef = FirebaseFirestore.instance.collection('publicaciones').doc(publicacion.id);
     await docRef.update({
@@ -282,7 +283,8 @@ class FirestoreHelper {
       "categoria" : categoria,
       "precio" : precio,
       "fechaCaducidad" : fechaCaducidad,
-      "fechaMaximaPublicacion" : fechaMaximaPublicacion
+      "fechaMaximaPublicacion" : fechaMaximaPublicacion,
+      "stock" : stock
     });
   }
 
